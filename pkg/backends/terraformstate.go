@@ -11,6 +11,7 @@ import (
 	"github.com/minio/minio-go/v7"
 )
 
+// MinioClient is an interface to work with S3. It's needed to mock S3 communication during tests
 type MinioClient interface {
 	GetObject(ctx context.Context, bucket, path string, opt minio.GetObjectOptions) (io.Reader, error)
 }
@@ -29,6 +30,7 @@ func (mcw *minioClientWrapper) GetObject(ctx context.Context, bucket, path strin
 	return mcw.mcl.GetObject(ctx, bucket, path, opt)
 }
 
+// WrapMinioClient wraps official minio.Client to match needed interface
 func WrapMinioClient(c *minio.Client) MinioClient {
 	return &minioClientWrapper{mcl: c}
 }
@@ -46,7 +48,7 @@ func (ycl *TerraformState) Login() error {
 	return nil
 }
 
-// GetSecrets gets secrets from lockbox and returns the formatted data
+// GetSecrets gets secrets from terraform state backend and returns the formatted data
 func (ycl *TerraformState) GetSecrets(path string, version string, _ map[string]string) (map[string]interface{}, error) {
 
 	var options = minio.GetObjectOptions{}
@@ -77,7 +79,7 @@ func (ycl *TerraformState) GetSecrets(path string, version string, _ map[string]
 	return results, nil
 }
 
-// GetIndividualSecret will get the specific secret (placeholder) from the lockbox backend
+// GetIndividualSecret will get the specific secret (placeholder) from the terraform state backend
 func (ycl *TerraformState) GetIndividualSecret(path, key, version string, _ map[string]string) (interface{}, error) {
 	secrets, err := ycl.GetSecrets(path, version, nil)
 	if err != nil {

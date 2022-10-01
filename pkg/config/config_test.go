@@ -187,6 +187,16 @@ fDGt+yaf3RaZbVwHSVLzxiXGsu1WQJde3uJeNh5c6z+5
 		},
 		{
 			map[string]interface{}{
+				"AVP_TYPE":             "terraform",
+				"AVP_TF_S3_ENDPOINT":   "endpoint.com",
+				"AVP_TF_S3_BUCKET":     "bucket",
+				"AVP_TF_S3_ACCESS_KEY": "key",
+				"AVP_TF_S3_SECRET_KEY": "key",
+			},
+			"*backends.TerraformState",
+		},
+		{
+			map[string]interface{}{
 				"ARGOCD_ENV_AVP_TYPE":         "vault",
 				"ARGOCD_ENV_AVP_AUTH_TYPE":    "github",
 				"ARGOCD_ENV_AVP_GITHUB_TOKEN": "token",
