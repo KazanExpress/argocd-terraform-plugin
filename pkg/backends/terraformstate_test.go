@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/argoproj-labs/argocd-vault-plugin/pkg/backends"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/minio/minio-go/v7"
 )
 
@@ -52,19 +51,15 @@ func TestTerraformState(t *testing.T) {
 
 	bucketName := "argocd-test"
 	path := "/test/case/1/terraform.state"
-	st := terraform.NewState()
-	st.Init()
-	st.AddModuleState(&terraform.ModuleState{
-		Outputs: map[string]*terraform.OutputState{
+	st := backends.TFState{
+		Outputs: map[string]*backends.TFOutput{
 			"test_string": {
-				Type:  "string",
 				Value: strVal,
 			},
 			"test_obj": {
-				Type:  "map",
 				Value: objVal,
 			},
-		}})
+		}}
 	stateJson, err := json.Marshal(st)
 	if err != nil {
 		t.Fatal(err)

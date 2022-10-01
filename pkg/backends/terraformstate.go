@@ -1,13 +1,14 @@
 package backends
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 
 	"github.com/argoproj-labs/argocd-vault-plugin/pkg/utils"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/minio/minio-go/v7"
 )
 
@@ -20,6 +21,14 @@ type MinioClient interface {
 type TerraformState struct {
 	client MinioClient
 	bucket string
+}
+
+type TFOutput struct {
+	Value interface{}
+}
+
+type TFState struct {
+	Outputs map[string]*TFOutput `json:"outputs"`
 }
 
 type minioClientWrapper struct {
@@ -65,14 +74,21 @@ func (ycl *TerraformState) GetSecrets(path string, version string, _ map[string]
 
 	utils.VerboseToStdErr("Terraform S3 State got object %v", obj)
 
-	var state terraform.State
-	err = json.NewDecoder(obj).Decode(&state)
+	data, err := ioutil.ReadAll(obj)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read: %w", err)
+	}
+	var state TFState
+	// state.Init()
+	err = json.NewDecoder(bytes.NewReader(data)).Decode(&state)
+	if err != nil {
+		utils.VerboseToStdErr("Terraform S3 State failed parsing json: %s: %w", string(data), err)
+
+		return nil, fmt.Errorf("failed to decode state from json: %w", err)
 	}
 
 	results := make(map[string]interface{})
-	for key, output := range state.RootModule().Outputs {
+	for key, output := range state.Outputs {
 		results[key] = output.Value
 	}
 
@@ -88,7 +104,9 @@ func (ycl *TerraformState) GetIndividualSecret(path, key, version string, _ map[
 
 	secret, found := secrets[key]
 	if !found {
-		return nil, fmt.Errorf("secretID: %s, key: %s, version: %s not found", path, key, version)
+		utils.VerboseToStdErr("Terraform S3 State existing secrets: %v", secrets)
+
+		return nil, fmt.Errorf("path: %s, key: %s, version: %s not found", path, key, version)
 	}
 
 	return secret, nil
