@@ -24,6 +24,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	awssm "github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/hashicorp/vault/api"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/spf13/viper"
 	ycsdk "github.com/yandex-cloud/go-sdk"
 	"github.com/yandex-cloud/go-sdk/iamkey"
@@ -236,6 +238,34 @@ func New(v *viper.Viper, co *Options) (*Config, error) {
 			}
 
 			backend = backends.NewOnePasswordConnectBackend(client)
+		}
+	case types.TerraformStateBackend:
+		{
+			if !v.IsSet(types.EnvAvpTFS3AccessKey) ||
+				!v.IsSet(types.EnvAvpTFS3Bucket) ||
+				!v.IsSet(types.EnvAvpTFS3Endpoint) ||
+				!v.IsSet(types.EnvAvpTFS3SecretKey) {
+				return nil, fmt.Errorf(
+					"%s, %s, %s and %s are required for terraform state backend",
+					types.EnvAvpTFS3AccessKey,
+					types.EnvAvpTFS3Bucket,
+					types.EnvAvpTFS3Endpoint,
+					types.EnvAvpTFS3SecretKey,
+				)
+			}
+
+			client, err := minio.New(v.GetString(types.EnvAvpTFS3Endpoint), &minio.Options{
+				Creds: credentials.NewStaticV4(
+					v.GetString(types.EnvAvpTFS3AccessKey),
+					v.GetString(types.EnvAvpTFS3SecretKey),
+					""),
+			})
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to create minio client: %w", err)
+			}
+
+			backend = backends.NewTerraformStateBackend(backends.WrapMinioClient(client), v.GetString(types.EnvAvpTFS3Bucket))
 		}
 	default:
 		return nil, fmt.Errorf("Must provide a supported Vault Type, received %s", v.GetString(types.EnvAvpType))

@@ -25,6 +25,10 @@ const (
 	EnvYCLPrivateKey       = "AVP_YCL_PRIVATE_KEY"
 	EnvAvpUsername         = "AVP_USERNAME"
 	EnvAvpPassword         = "AVP_PASSWORD"
+	EnvAvpTFS3Bucket       = "AVP_TF_S3_BUCKET"
+	EnvAvpTFS3Endpoint     = "AVP_TF_S3_ENDPOINT"
+	EnvAvpTFS3AccessKey    = "AVP_TF_S3_ACCESS_KEY"
+	EnvAvpTFS3SecretKey    = "AVP_TF_S3_SECRET_KEY"
 
 	// Backend and Auth Constants
 	VaultBackend              = "vault"
@@ -49,6 +53,7 @@ const (
 	IBMIAMCredentialsType     = "iam_credentials"
 	IBMImportedCertType       = "imported_cert"
 	IBMPublicCertType         = "public_cert"
+	TerraformStateBackend     = "terraform"
 
 	// Supported annotations
 	AVPPathAnnotation          = "avp.kubernetes.io/path"
