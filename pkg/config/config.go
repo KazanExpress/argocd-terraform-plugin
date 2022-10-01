@@ -259,6 +259,7 @@ func New(v *viper.Viper, co *Options) (*Config, error) {
 					v.GetString(types.EnvAvpTFS3AccessKey),
 					v.GetString(types.EnvAvpTFS3SecretKey),
 					""),
+				Secure: v.GetBool(types.EnvAvpTFS3UseSSL),
 			})
 
 			if err != nil {

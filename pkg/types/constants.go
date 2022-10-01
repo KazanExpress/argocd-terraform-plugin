@@ -29,6 +29,7 @@ const (
 	EnvAvpTFS3Endpoint     = "AVP_TF_S3_ENDPOINT"
 	EnvAvpTFS3AccessKey    = "AVP_TF_S3_ACCESS_KEY"
 	EnvAvpTFS3SecretKey    = "AVP_TF_S3_SECRET_KEY"
+	EnvAvpTFS3UseSSL       = "AVP_TF_S3_USE_SSL"
 
 	// Backend and Auth Constants
 	VaultBackend              = "vault"
