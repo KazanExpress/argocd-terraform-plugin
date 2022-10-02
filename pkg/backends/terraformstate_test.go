@@ -67,7 +67,7 @@ func TestTerraformState(t *testing.T) {
 	mock := newMockMinioClient()
 	mock.setObject(bucketName, path, stateJson)
 
-	backend := backends.NewTerraformStateBackend(mock, bucketName)
+	backend := backends.NewS3Backend(mock, bucketName)
 
 	t.Run("Terraform State GetSecrets()", func(t *testing.T) {
 

@@ -44,8 +44,8 @@ func WrapMinioClient(c *minio.Client) MinioClient {
 	return &minioClientWrapper{mcl: c}
 }
 
-// NewTerraformStateBackend initializes a new Terraform S3 State backend
-func NewTerraformStateBackend(client MinioClient, bucket string) *TerraformState {
+// NewS3Backend initializes a new Terraform S3 State backend
+func NewS3Backend(client MinioClient, bucket string) *TerraformState {
 	return &TerraformState{
 		client: client,
 		bucket: bucket,
