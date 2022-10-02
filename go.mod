@@ -1,4 +1,4 @@
-module github.com/argoproj-labs/argocd-vault-plugin
+module github.com/KazanExpress/argocd-terraform-plugin
 
 go 1.17
 
@@ -11,16 +11,16 @@ replace (
 require (
 	cloud.google.com/go/kms v1.0.0 // indirect
 	cloud.google.com/go/monitoring v1.0.0 // indirect
-	cloud.google.com/go/secretmanager v1.4.0
-	github.com/1Password/connect-sdk-go v1.4.0
-	github.com/Azure/azure-sdk-for-go v65.0.0+incompatible
+	cloud.google.com/go/secretmanager v1.4.0 // indirect
+	github.com/1Password/connect-sdk-go v1.4.0 // indirect
+	github.com/Azure/azure-sdk-for-go v65.0.0+incompatible // indirect
 	github.com/Azure/go-autorest/autorest v0.11.27 // indirect
 	github.com/Azure/go-autorest/autorest/azure/auth v0.5.11 // indirect
 	github.com/Azure/go-autorest/autorest/azure/cli v0.4.5 // indirect
-	github.com/IBM/go-sdk-core/v5 v5.10.1
-	github.com/IBM/secrets-manager-go-sdk v1.0.44
+	github.com/IBM/go-sdk-core/v5 v5.10.1 // indirect
+	github.com/IBM/secrets-manager-go-sdk v1.0.44 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
-	github.com/aws/aws-sdk-go v1.44.24
+	github.com/aws/aws-sdk-go v1.44.24 // indirect
 	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-openapi/errors v0.20.2 // indirect
@@ -28,7 +28,7 @@ require (
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/googleapis/gax-go/v2 v2.4.0
+	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
 	github.com/hashicorp/go-hclog v1.2.1
 	github.com/hashicorp/vault v1.10.6
 	github.com/hashicorp/vault-plugin-secrets-kv v0.11.0
@@ -38,14 +38,14 @@ require (
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.12.0
-	github.com/yandex-cloud/go-genproto v0.0.0-20220523093647-071bccd2b16c
-	github.com/yandex-cloud/go-sdk v0.0.0-20220511115426-9feb5f1ee87f
+	github.com/yandex-cloud/go-genproto v0.0.0-20220523093647-071bccd2b16c // indirect
+	github.com/yandex-cloud/go-sdk v0.0.0-20220511115426-9feb5f1ee87f // indirect
 	go.mongodb.org/mongo-driver v1.9.1 // indirect
-	go.mozilla.org/sops/v3 v3.7.2
-	golang.org/x/net v0.0.0-20220722155237-a158d28d115b
+	go.mozilla.org/sops/v3 v3.7.2 // indirect
+	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
-	google.golang.org/genproto v0.0.0-20220527130721-00d5c0f3be58
-	google.golang.org/grpc v1.48.0
+	google.golang.org/genproto v0.0.0-20220527130721-00d5c0f3be58 // indirect
+	google.golang.org/grpc v1.48.0 // indirect
 	k8s.io/apimachinery v0.24.1
 	k8s.io/client-go v0.24.1
 	k8s.io/klog/v2 v2.60.1 // indirect
@@ -245,6 +245,8 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.1 // indirect
 )
 
+require github.com/argoproj-labs/argocd-vault-plugin v1.13.0
+
 require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
@@ -253,5 +255,3 @@ require (
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/rs/xid v1.4.0 // indirect
 )
-
-require gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

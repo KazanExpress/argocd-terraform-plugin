@@ -4,30 +4,30 @@ metadata:
   name: argocd-cm
 data:
   configManagementPlugins: |
-    - name: argocd-vault-plugin
+    - name: argocd-terraform-plugin
       generate:
-        command: ["argocd-vault-plugin"]
+        command: ["argocd-terraform-plugin"]
         args: ["generate", "./"]
 
-    - name: argocd-vault-plugin-helm
+    - name: argocd-terraform-plugin-helm
       generate:
         command: ["sh", "-c"]
-        args: ['helm template "$ARGOCD_APP_NAME" -n "$ARGOCD_APP_NAMESPACE" . | argocd-vault-plugin generate -']
+        args: ['helm template "$ARGOCD_APP_NAME" -n "$ARGOCD_APP_NAMESPACE" . | argocd-terraform-plugin generate -']
 
-    # This lets you pass args to the Helm invocation as described here: https://argocd-vault-plugin.readthedocs.io/en/stable/usage/#with-helm
-    - name: argocd-vault-plugin-helm-with-args
+    # This lets you pass args to the Helm invocation as described here: https://argocd-terraform-plugin.readthedocs.io/en/stable/usage/#with-helm
+    - name: argocd-terraform-plugin-helm-with-args
       generate:
         command: ["sh", "-c"]
-        args: ['helm template "$ARGOCD_APP_NAME" -n "$ARGOCD_APP_NAMESPACE" ${helm_args} . | argocd-vault-plugin generate -']
+        args: ['helm template "$ARGOCD_APP_NAME" -n "$ARGOCD_APP_NAMESPACE" ${helm_args} . | argocd-terraform-plugin generate -']
 
     # This lets you pass a values file as a string as described here:
-    # https://argocd-vault-plugin.readthedocs.io/en/stable/usage/#with-helm
-    - name: argocd-vault-plugin-helm-with-values
+    # https://argocd-terraform-plugin.readthedocs.io/en/stable/usage/#with-helm
+    - name: argocd-terraform-plugin-helm-with-values
       generate:
         command: ["bash", "-c"]
-        args: ['helm template "$ARGOCD_APP_NAME" -n "$ARGOCD_APP_NAMESPACE" -f <(echo "$ARGOCD_ENV_HELM_VALUES") . | argocd-vault-plugin generate -']
+        args: ['helm template "$ARGOCD_APP_NAME" -n "$ARGOCD_APP_NAMESPACE" -f <(echo "$ARGOCD_ENV_HELM_VALUES") . | argocd-terraform-plugin generate -']
 
-    - name: argocd-vault-plugin-kustomize
+    - name: argocd-terraform-plugin-kustomize
       generate:
         command: ["sh", "-c"]
-        args: ["kustomize build . | argocd-vault-plugin generate -"]
+        args: ["kustomize build . | argocd-terraform-plugin generate -"]

@@ -1,5 +1,5 @@
 site_name: Argo CD Vault Plugin
-repo_url: https://github.com/argoproj-labs/argocd-vault-plugin
+repo_url: https://github.com/KazanExpress/argocd-terraform-plugin
 edit_uri: edit/main/docs/
 
 theme:
@@ -25,10 +25,10 @@ nav:
   - Backends: backends.md
   - Configuration: config.md
   - CLI Reference:
-    - argocd-vault-plugin: cmd/avp.md
-    - argocd-vault-plugin generate: cmd/generate.md
-    - argocd-vault-plugin version: cmd/version.md
+    - argocd-terraform-plugin: cmd/avp.md
+    - argocd-terraform-plugin generate: cmd/generate.md
+    - argocd-terraform-plugin version: cmd/version.md
   - Upgrading:
      - v0.x to v1.x: 0x-1x.md
   - Compatibility: compatibility.md
-  - Releases ⧉: https://github.com/argoproj-labs/argocd-vault-plugin/releases
+  - Releases ⧉: https://github.com/KazanExpress/argocd-terraform-plugin/releases

@@ -29,15 +29,15 @@ spec:
         command: [sh, -c]
         args:
           - >-
-            curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-vault-plugin &&
-            chmod +x argocd-vault-plugin &&
-            mv argocd-vault-plugin /custom-tools/
+            curl -L https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v$(AVP_VERSION)/argocd-terraform-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-terraform-plugin &&
+            chmod +x argocd-terraform-plugin &&
+            mv argocd-terraform-plugin /custom-tools/
 
         volumeMounts:
           - mountPath: /custom-tools
             name: custom-tools
 
-      # argocd-vault-plugin with Helm
+      # argocd-terraform-plugin with Helm
       containers:
       - name: avp-helm
         command: [/var/run/argocd/argocd-cmp-server]
@@ -60,10 +60,10 @@ spec:
 
           # Important: Mount tools into $PATH
           - name: custom-tools
-            subPath: argocd-vault-plugin
-            mountPath: /usr/local/bin/argocd-vault-plugin
+            subPath: argocd-terraform-plugin
+            mountPath: /usr/local/bin/argocd-terraform-plugin
 
-      # argocd-vault-plugin with Kustomize
+      # argocd-terraform-plugin with Kustomize
       - name: avp-kustomize
         command: [/var/run/argocd/argocd-cmp-server]
         image: quay.io/argoproj/argocd:v2.4.0
@@ -85,10 +85,10 @@ spec:
 
           # Important: Mount tools into $PATH
           - name: custom-tools
-            subPath: argocd-vault-plugin
-            mountPath: /usr/local/bin/argocd-vault-plugin
+            subPath: argocd-terraform-plugin
+            mountPath: /usr/local/bin/argocd-terraform-plugin
 
-      # argocd-vault-plugin with plain YAML
+      # argocd-terraform-plugin with plain YAML
       - name: avp
         command: [/var/run/argocd/argocd-cmp-server]
         image: quay.io/argoproj/argocd:v2.4.0
@@ -110,5 +110,5 @@ spec:
 
           # Important: Mount tools into $PATH
           - name: custom-tools
-            subPath: argocd-vault-plugin
-            mountPath: /usr/local/bin/argocd-vault-plugin
+            subPath: argocd-terraform-plugin
+            mountPath: /usr/local/bin/argocd-terraform-plugin

@@ -1,13 +1,13 @@
-project_name: "argocd-vault-plugin"
+project_name: "argocd-terraform-plugin"
 
 builds:
-  - binary: "argocd-vault-plugin"
+  - binary: "argocd-terraform-plugin"
     flags: "-trimpath"
     ldflags: >-
       -s -w
-      -X "github.com/argoproj-labs/argocd-vault-plugin/version.Version={{.Tag}}"
-      -X "github.com/argoproj-labs/argocd-vault-plugin/version.BuildDate={{.Date}}"
-      -X "github.com/argoproj-labs/argocd-vault-plugin/version.CommitSHA={{.Commit}}"
+      -X "github.com/KazanExpress/argocd-terraform-plugin/version.Version={{.Tag}}"
+      -X "github.com/KazanExpress/argocd-terraform-plugin/version.BuildDate={{.Date}}"
+      -X "github.com/KazanExpress/argocd-terraform-plugin/version.CommitSHA={{.Commit}}"
     env:
       - "CGO_ENABLED=0"
     goos:

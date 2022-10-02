@@ -1,7 +1,7 @@
 Generate manifests from templates with Vault values
 
 ```
-argocd-vault-plugin generate PATH [flags]
+argocd-terraform-plugin generate PATH [flags]
 ```
 
 ### Options
@@ -14,4 +14,4 @@ argocd-vault-plugin generate PATH [flags]
 
 ### SEE ALSO
 
-* [argocd-vault-plugin](avp.md) - replace <placeholder\>'s with Vault secrets
+* [argocd-terraform-plugin](avp.md) - replace <placeholder\>'s with Vault secrets

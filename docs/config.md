@@ -1,4 +1,4 @@
-There are 3 different ways that parameters can be passed along to argocd-vault-plugin.
+There are 3 different ways that parameters can be passed along to argocd-terraform-plugin.
 
 ##### Kubernetes Secret
 
@@ -19,7 +19,7 @@ metadata:
 type: Opaque
 ```
 
-You can use it like this: `argocd-vault-plugin generate /some/path -s vault-configuration`.
+You can use it like this: `argocd-terraform-plugin generate /some/path -s vault-configuration`.
 
 By default, the secret is assumed to be in the `argocd` namespace. However, the namespace containing the secret can be provided by using the format `<namespace>:<name>`
 
@@ -53,7 +53,7 @@ AVP_GITHUB_TOKEN: t0ke3n
 AVP_TYPE: vault
 ```
 
-You can use it like this: `argocd-vault-plugin generate /some/path -c /path/to/config/file.yaml`. This can be useful for use-cases not involving Argo CD.
+You can use it like this: `argocd-terraform-plugin generate /some/path -c /path/to/config/file.yaml`. This can be useful for use-cases not involving Argo CD.
 
 ##### Environment Variables
 
@@ -124,7 +124,7 @@ data:
     - name: aws-avp
       generate:
         command: ["sh", "-c"]
-        args: ["argocd-vault-plugin generate -s ${AVP_SECRET} ./"]
+        args: ["argocd-terraform-plugin generate -s ${AVP_SECRET} ./"]
 ```
 
 Notice that the secret name is parametrized via an environment variable. This means each Argo app manifest can set `AVP_SECRET` to be the name of the Kubernetes secret that contains the configuration for the backend needed to generate its secrets.
@@ -165,12 +165,12 @@ data:
     - name: foo-aws-avp
       generate:
         command: ["sh", "-c"]
-        args: ["argocd-vault-plugin generate -s foo-team-aws-sm-credentials ./"]
+        args: ["argocd-terraform-plugin generate -s foo-team-aws-sm-credentials ./"]
 
     - name: bar-aws-avp
       generate:
         command: ["sh", "-c"]
-        args: ["argocd-vault-plugin generate -s bar-team-aws-sm-credentials ./"]
+        args: ["argocd-terraform-plugin generate -s bar-team-aws-sm-credentials ./"]
 ```
 
 The `foo` team would then deploy an Argo app like this:
@@ -210,7 +210,7 @@ data:
   configManagementPlugins: |
     - name: vault-avp
       generate:
-        command: ["argocd-vault-plugin"]
+        command: ["argocd-terraform-plugin"]
         args: ["generate", "./"]
 ```
 

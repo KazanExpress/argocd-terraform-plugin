@@ -9,14 +9,14 @@ spec:
       - name: argocd-repo-server
         volumeMounts:
         - name: custom-tools
-          mountPath: /usr/local/bin/argocd-vault-plugin
-          subPath: argocd-vault-plugin
+          mountPath: /usr/local/bin/argocd-terraform-plugin
+          subPath: argocd-terraform-plugin
 
         # Note: AVP config (for the secret manager, etc) can be passed in several ways. This is just one example
-        # https://argocd-vault-plugin.readthedocs.io/en/stable/config/
+        # https://argocd-terraform-plugin.readthedocs.io/en/stable/config/
         envFrom:
           - secretRef:
-              name: argocd-vault-plugin-credentials
+              name: argocd-terraform-plugin-credentials
       volumes:
       - name: custom-tools
         emptyDir: {}
@@ -32,10 +32,10 @@ spec:
             value: "1.7.0"
         args:
           - >-
-            wget -O argocd-vault-plugin
-            https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64 &&
-            chmod +x argocd-vault-plugin &&
-            mv argocd-vault-plugin /custom-tools/
+            wget -O argocd-terraform-plugin
+            https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${AVP_VERSION}/argocd-terraform-plugin_${AVP_VERSION}_linux_amd64 &&
+            chmod +x argocd-terraform-plugin &&
+            mv argocd-terraform-plugin /custom-tools/
         volumeMounts:
           - mountPath: /custom-tools
             name: custom-tools

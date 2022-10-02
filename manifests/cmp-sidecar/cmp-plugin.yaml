@@ -8,7 +8,7 @@ data:
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
-      name: argocd-vault-plugin-kustomize
+      name: argocd-terraform-plugin-kustomize
     spec:
       allowConcurrency: true
 
@@ -25,14 +25,14 @@ data:
         command:
           - sh
           - "-c"
-          - "kustomize build . | argocd-vault-plugin generate -"
+          - "kustomize build . | argocd-terraform-plugin generate -"
       lockRepo: false
   avp-helm.yaml: |
     ---
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
-      name: argocd-vault-plugin-helm
+      name: argocd-terraform-plugin-helm
     spec:
       allowConcurrency: true
 
@@ -50,13 +50,13 @@ data:
           - "-c"
           - |
             helm template $ARGOCD_APP_NAME -n $ARGOCD_APP_NAMESPACE ${ARGOCD_ENV_HELM_ARGS} . |
-            argocd-vault-plugin generate -
+            argocd-terraform-plugin generate -
       lockRepo: false
   avp.yaml: |
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
-      name: argocd-vault-plugin
+      name: argocd-terraform-plugin
     spec:
       allowConcurrency: true
       discover:
@@ -67,7 +67,7 @@ data:
             - "find . -name '*.yaml' | xargs -I {} grep \"<path\\|avp\\.kubernetes\\.io\" {} | grep ."
       generate:
         command:
-          - argocd-vault-plugin
+          - argocd-terraform-plugin
           - generate
           - "."
       lockRepo: false

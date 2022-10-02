@@ -1,6 +1,6 @@
 ### Summary
 
-The argocd-vault-plugin works by taking a directory of YAML or JSON files that have been templated out using the pattern of `<placeholder>` where you would want a value from Vault to go. The inside of the `<>` would be the actual key in Vault.
+The argocd-terraform-plugin works by taking a directory of YAML or JSON files that have been templated out using the pattern of `<placeholder>` where you would want a value from Vault to go. The inside of the `<>` would be the actual key in Vault.
 
 An annotation can be used to specify exactly where the plugin should look for the vault values. The annotation needs to be in the format `avp.kubernetes.io/path: "path/to/secret"`.
 
@@ -92,14 +92,14 @@ metadata:
 **Note**: This ignored for secret managers that don't allow versioning, meaning the latest version is returned
 
 #### Inline-path placeholders
-An inline-path placeholder allows you to specify the path, key, and optionally, the version to use for a specific placeholder. This means you can inject values from _multiple distinct_ secrets in your secrets manager into the same YAML. 
+An inline-path placeholder allows you to specify the path, key, and optionally, the version to use for a specific placeholder. This means you can inject values from _multiple distinct_ secrets in your secrets manager into the same YAML.
 
 Valid examples:
 
 - `<path:some/path#secret-key>`
 - `<path:some/path#secret-key#version>`
 
-If the `version` is omitted (first example), the latest version of the secret is retrieved. 
+If the `version` is omitted (first example), the latest version of the secret is retrieved.
 
 ##### Specifying the path of a secret
 The only way to specify the path is in the placeholder itself: the string `path:` followed by the path in your secret manager to the secret. The `avp.kubernetes.io/path` annotation has _no effect_ on these placeholders.
@@ -112,9 +112,9 @@ The only way to specify the version is in the placeholder itself: the string fol
 #### Special behavior
 
 ##### Base64 placeholders
-Some tools like Kustomize secret generator will create Secrets with `data` fields containing base64 encoded strings from the source files. If you try to use `<placeholder>`s in the source files, they will be output in a base64 format. 
+Some tools like Kustomize secret generator will create Secrets with `data` fields containing base64 encoded strings from the source files. If you try to use `<placeholder>`s in the source files, they will be output in a base64 format.
 
-The plugin can handle this case by finding any base64 encoded placeholders (either generic or inline-path), replace them, and re-base64 encode the result. 
+The plugin can handle this case by finding any base64 encoded placeholders (either generic or inline-path), replace them, and re-base64 encode the result.
 
 For example, given this input:
 ```yaml
@@ -211,9 +211,9 @@ fieldRef:
 ```
 
 ##### Removing keys with missing values
-By default, AVP will return an error if there is a `<placeholder>` that has no matching key in the secrets manager. 
+By default, AVP will return an error if there is a `<placeholder>` that has no matching key in the secrets manager.
 
-You can override this by using the annotation `avp.kubernetes.io/remove-missing`. This will remove keys whose values are missing from Vault from the entire YAML. 
+You can override this by using the annotation `avp.kubernetes.io/remove-missing`. This will remove keys whose values are missing from Vault from the entire YAML.
 
 For example, given this input:
 ```yaml
@@ -342,18 +342,18 @@ spec:
 
 #### Detecting errors in chained commands
 
-By default argocd-vault-plugin will read valid kubernetes YAMLs and replace variables with values from Vault.
+By default argocd-terraform-plugin will read valid kubernetes YAMLs and replace variables with values from Vault.
 If a previous command failed and outputs nothing to stdout and AVP reads the input from stdin with
 the `-` argument, AVP will forward an empty YAML output downstream. To catch and prevent accientental errors
 in chained commands, please use the `-o pipefail` bash option like so:
 
 ```bash
-$ sh -c '((>&2 echo "some error" && exit 1) | argocd-vault-plugin generate - | kubectl diff -f -); echo $?;'
+$ sh -c '((>&2 echo "some error" && exit 1) | argocd-terraform-plugin generate - | kubectl diff -f -); echo $?;'
 some error
 0
 
 $ set -o pipefail
-$ sh -c '((>&2 echo "some error" && exit 1) | argocd-vault-plugin generate - | kubectl diff -f -); echo $?;'
+$ sh -c '((>&2 echo "some error" && exit 1) | argocd-terraform-plugin generate - | kubectl diff -f -); echo $?;'
 some error
 1
 ```

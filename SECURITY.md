@@ -1,4 +1,4 @@
-# Security policy for argocd-vault-plugin
+# Security policy for argocd-terraform-plugin
 
 ## Policy
 

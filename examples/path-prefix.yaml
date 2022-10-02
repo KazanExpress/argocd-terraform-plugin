@@ -4,7 +4,7 @@
 # secret/data/database/secret
 
 # Note: This no longer works in version >= 1.x. Use the path annotation or inline-path placeholder instead
-# https://argocd-vault-plugin.readthedocs.io/en/stable/0x-1x/#removed-path_prefix
+# https://argocd-terraform-plugin.readthedocs.io/en/stable/0x-1x/#removed-path_prefix
 kind: Secret
 apiVersion: v1
 metadata:

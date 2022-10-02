@@ -1,7 +1,7 @@
 This is a plugin to replace <placeholder\>'s with Vault secrets
 
 ```
-argocd-vault-plugin [flags]
+argocd-terraform-plugin [flags]
 ```
 
 ### Options
@@ -11,5 +11,5 @@ argocd-vault-plugin [flags]
 
 ### SEE ALSO
 
-* [argocd-vault-plugin generate](generate.md) - Generate manifests from templates with Vault values
-* [argocd-vault-plugin version](version.md) - Print version information
+* [argocd-terraform-plugin generate](generate.md) - Generate manifests from templates with Vault values
+* [argocd-terraform-plugin version](version.md) - Print version information

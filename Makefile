@@ -1,9 +1,9 @@
-BINARY=argocd-vault-plugin
+BINARY=argocd-terraform-plugin
 
 default: build
 
 quality:
-	go vet github.com/argoproj-labs/argocd-vault-plugin
+	go vet github.com/KazanExpress/argocd-terraform-plugin
 	go test -v -coverprofile cover.out ./...
 
 build:
@@ -12,4 +12,4 @@ build:
 install: build
 
 e2e: install
-	./argocd-vault-plugin
+	./argocd-terraform-plugin

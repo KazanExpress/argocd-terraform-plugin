@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/cmd"
+	"github.com/KazanExpress/argocd-terraform-plugin/cmd"
 )
 
 func main() {

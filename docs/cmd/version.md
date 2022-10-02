@@ -1,7 +1,7 @@
-Print argocd-vault-plugin version information
+Print argocd-terraform-plugin version information
 
 ```
-argocd-vault-plugin version [flags]
+argocd-terraform-plugin version [flags]
 ```
 
 ### Options
@@ -11,4 +11,4 @@ argocd-vault-plugin version [flags]
 
 ### SEE ALSO
 
-* [argocd-vault-plugin](avp.md) - replace <placeholder\>'s with Vault secrets
+* [argocd-terraform-plugin](avp.md) - replace <placeholder\>'s with Vault secrets

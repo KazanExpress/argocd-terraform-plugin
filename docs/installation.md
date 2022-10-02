@@ -5,7 +5,7 @@ In order to use the plugin in Argo CD you have 4 distinct options:
 - Installation via `argocd-cm` ConfigMap
 
     - Download AVP in a volume and control everything as Kubernetes manifests
-        - Available as a pre-built Kustomize app: <https://github.com/argoproj-labs/argocd-vault-plugin/blob/main/manifests/cmp-configmap>
+        - Available as a pre-built Kustomize app: <https://github.com/KazanExpress/argocd-terraform-plugin/blob/main/manifests/cmp-configmap>
 
     - Create a custom `argocd-repo-server` image with AVP and supporting tools pre-installed
 
@@ -13,7 +13,7 @@ In order to use the plugin in Argo CD you have 4 distinct options:
 
     - Download AVP and supporting tools into a volume and control everything as Kubernetes manifests, using an off-the-shelf sidecar image
 
-        - Available as a pre-built Kustomize app: <https://github.com/argoproj-labs/argocd-vault-plugin/blob/main/manifests/cmp-sidecar>
+        - Available as a pre-built Kustomize app: <https://github.com/KazanExpress/argocd-terraform-plugin/blob/main/manifests/cmp-sidecar>
 
     - Create a custom sidecar image with AVP and supporting tools pre-installed
 
@@ -30,9 +30,9 @@ metadata:
 spec:
   ... other fields
   plugin:
-    name: argocd-vault-plugin
+    name: argocd-terraform-plugin
 ```
-This is a perfectly fine method and will continue to work as long as Argo CD supports it. 
+This is a perfectly fine method and will continue to work as long as Argo CD supports it.
 
 However, the Argo CD project has another method of using custom plugins which involves defining a [sidecar container](https://kubernetes.io/docs/concepts/workloads/pods/#workload-resources-for-managing-pods) for each individual plugin (this is a different container from the `argocd-repo-server` and will be the context in which the plugin runs), and having Argo CD decide which plugin to use based on the plugin definition:
 ```yaml
@@ -44,7 +44,7 @@ spec:
   ... other fields
   # No need to define `plugin` since Argo CD will figure it out!
 ```
-There are some [security benefits to running this way](https://github.com/argoproj/argo-cd/issues/9083#issuecomment-1098517762), it may be [future proof](https://github.com/argoproj/argo-cd/issues/8117), and you don't have to explicitly tell Argo CD which plugin to use: it will auto-detect it, like it does for Helm or Kustomize based applications. On the other hand, it adds a bit more complexity and can make some argocd-vault-plugin integrations a bit trickier - see the [caveats section of the Usage page](../usage#running-argocd-vault-plugin-in-a-sidecar-container) for details.
+There are some [security benefits to running this way](https://github.com/argoproj/argo-cd/issues/9083#issuecomment-1098517762), it may be [future proof](https://github.com/argoproj/argo-cd/issues/8117), and you don't have to explicitly tell Argo CD which plugin to use: it will auto-detect it, like it does for Helm or Kustomize based applications. On the other hand, it adds a bit more complexity and can make some argocd-terraform-plugin integrations a bit trickier - see the [caveats section of the Usage page](../usage#running-argocd-terraform-plugin-in-a-sidecar-container) for details.
 
 ### InitContainer and configuration via argocd-cm ConfigMap
 The first technique is to use an init container and a volumeMount to copy a different version of a tool into the repo-server container.
@@ -60,14 +60,14 @@ spec:
       - name: argocd-repo-server
         volumeMounts:
         - name: custom-tools
-          mountPath: /usr/local/bin/argocd-vault-plugin
-          subPath: argocd-vault-plugin
+          mountPath: /usr/local/bin/argocd-terraform-plugin
+          subPath: argocd-terraform-plugin
 
         # Note: AVP config (for the secret manager, etc) can be passed in several ways. This is just one example
-        # https://argocd-vault-plugin.readthedocs.io/en/stable/config/
+        # https://argocd-terraform-plugin.readthedocs.io/en/stable/config/
         envFrom:
           - secretRef:
-              name: argocd-vault-plugin-credentials
+              name: argocd-terraform-plugin-credentials
       volumes:
       - name: custom-tools
         emptyDir: {}
@@ -83,10 +83,10 @@ spec:
             value: "1.7.0"
         args:
           - >-
-            wget -O argocd-vault-plugin
-            https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64 &&
-            chmod +x argocd-vault-plugin &&
-            mv argocd-vault-plugin /custom-tools/
+            wget -O argocd-terraform-plugin
+            https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${AVP_VERSION}/argocd-terraform-plugin_${AVP_VERSION}_linux_amd64 &&
+            chmod +x argocd-terraform-plugin &&
+            mv argocd-terraform-plugin /custom-tools/
         volumeMounts:
           - mountPath: /custom-tools
             name: custom-tools
@@ -116,8 +116,8 @@ RUN apt-get update && \
 
 # Install the AVP plugin (as root so we can copy to /usr/local/bin)
 ENV AVP_VERSION=0.2.2
-ENV BIN=argocd-vault-plugin
-RUN curl -L -o ${BIN} https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64
+ENV BIN=argocd-terraform-plugin
+RUN curl -L -o ${BIN} https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${AVP_VERSION}/argocd-terraform-plugin_${AVP_VERSION}_linux_amd64
 RUN chmod +x ${BIN}
 RUN mv ${BIN} /usr/local/bin
 
@@ -130,9 +130,9 @@ For this plugin, you would add this:
 ```yaml
 data:
   configManagementPlugins: |-
-    - name: argocd-vault-plugin
+    - name: argocd-terraform-plugin
       generate:
-        command: ["argocd-vault-plugin"]
+        command: ["argocd-terraform-plugin"]
         args: ["generate", "./"]
 ```
 
@@ -151,7 +151,7 @@ data:
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
-      name: argocd-vault-plugin
+      name: argocd-terraform-plugin
     spec:
       allowConcurrency: true
       discover:
@@ -162,14 +162,14 @@ data:
             - "find . -name '*.yaml' | xargs -I {} grep \"<path\\|avp\\.kubernetes\\.io\" {} | grep ."
       generate:
         command:
-          - argocd-vault-plugin
+          - argocd-terraform-plugin
           - generate
           - "."
       lockRepo: false
 ---
 ```
 
-Patch the argocd-repo-server to add an initContainer to download argocd-vault-plugin and define the sidecar. You can change the image from `registry.access.redhat.com/ubi8` to whatever is desired, so long as it [contains the needed binaries](../usage#running-argocd-vault-plugin-in-a-sidecar-container)
+Patch the argocd-repo-server to add an initContainer to download argocd-terraform-plugin and define the sidecar. You can change the image from `registry.access.redhat.com/ubi8` to whatever is desired, so long as it [contains the needed binaries](../usage#running-argocd-terraform-plugin-in-a-sidecar-container)
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -194,9 +194,9 @@ spec:
         command: [sh, -c]
         args:
           - >-
-            curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-vault-plugin &&
-            chmod +x argocd-vault-plugin &&
-            mv argocd-vault-plugin /custom-tools/
+            curl -L https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v$(AVP_VERSION)/argocd-terraform-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-terraform-plugin &&
+            chmod +x argocd-terraform-plugin &&
+            mv argocd-terraform-plugin /custom-tools/
         volumeMounts:
           - mountPath: /custom-tools
             name: custom-tools
@@ -214,7 +214,7 @@ spec:
             name: plugins
           - mountPath: /tmp
             name: tmp
-          
+
           # Register plugins into sidecar
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
             subPath: avp.yaml
@@ -222,8 +222,8 @@ spec:
 
           # Important: Mount tools into $PATH
           - name: custom-tools
-            subPath: argocd-vault-plugin
-            mountPath: /usr/local/bin/argocd-vault-plugin
+            subPath: argocd-terraform-plugin
+            mountPath: /usr/local/bin/argocd-terraform-plugin
 ```
 
 ### Custom Image and configuration via sidecar
@@ -238,7 +238,7 @@ data:
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
-      name: argocd-vault-plugin
+      name: argocd-terraform-plugin
     spec:
       allowConcurrency: true
       discover:
@@ -249,7 +249,7 @@ data:
             - "find . -name '*.yaml' | xargs -I {} grep \"<path\\|avp\\.kubernetes\\.io\" {} | grep ."
       generate:
         command:
-          - argocd-vault-plugin
+          - argocd-terraform-plugin
           - generate
           - "."
       lockRepo: false
@@ -275,8 +275,8 @@ RUN apt-get update && \
 
 # Install the AVP plugin (as root so we can copy to /usr/local/bin)
 ENV AVP_VERSION=1.11.0
-ENV BIN=argocd-vault-plugin
-RUN curl -L -o ${BIN} https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64
+ENV BIN=argocd-terraform-plugin
+RUN curl -L -o ${BIN} https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${AVP_VERSION}/argocd-terraform-plugin_${AVP_VERSION}_linux_amd64
 RUN chmod +x ${BIN}
 RUN mv ${BIN} /usr/local/bin
 
@@ -312,7 +312,7 @@ spec:
             name: plugins
           - mountPath: /tmp
             name: tmp
-          
+
           # Register plugins into sidecar
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
             subPath: avp.yaml
@@ -322,15 +322,15 @@ spec:
 ## Installing locally
 ### On Linux or macOS via Curl
 ```
-curl -Lo argocd-vault-plugin https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/{version}/argocd-vault-plugin_{version}_{linux|darwin}_{amd64|arm64|s390x}
+curl -Lo argocd-terraform-plugin https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/{version}/argocd-terraform-plugin_{version}_{linux|darwin}_{amd64|arm64|s390x}
 
-chmod +x argocd-vault-plugin
+chmod +x argocd-terraform-plugin
 
-mv argocd-vault-plugin /usr/local/bin
+mv argocd-terraform-plugin /usr/local/bin
 ```
 
 ### On macOS via Homebrew
 
 ```
-brew install argocd-vault-plugin
+brew install argocd-terraform-plugin
 ```

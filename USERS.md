@@ -1,6 +1,6 @@
-## Who is using argocd-vault-plugin?
+## Who is using argocd-terraform-plugin?
 
-Currently, the following organizations are using argocd-vault-plugin:
+Currently, the following organizations are using argocd-terraform-plugin:
 
 * [Aveniq](https://aveniq.ch/)
 * [Boozt](https://www.booztgroup.com/)

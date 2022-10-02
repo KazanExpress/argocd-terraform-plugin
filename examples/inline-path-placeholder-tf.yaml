@@ -1,6 +1,6 @@
 # Using inline-path placeholders
 # This creates the same data as annotation-example.yaml but without the annotation
-# https://argocd-vault-plugin.readthedocs.io/en/stable/howitworks/#inline-path-placeholders
+# https://argocd-terraform-plugin.readthedocs.io/en/stable/howitworks/#inline-path-placeholders
 kind: Secret
 apiVersion: v1
 metadata:

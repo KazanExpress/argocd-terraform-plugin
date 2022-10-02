@@ -22,8 +22,8 @@ setTimeout(function() {
   }
 
   var script = document.createElement('script');
-  script.src = 'https://argocd-vault-plugin.readthedocs.io/_/api/v2/footer_html/?'+
-      'callback=' + callbackName + '&project=argocd-vault-plugin&page=&theme=mkdocs&format=jsonp&docroot=docs&source_suffix=.md&version=' + (window['READTHEDOCS_DATA'] || { version: 'latest' }).version;
+  script.src = 'https://argocd-terraform-plugin.readthedocs.io/_/api/v2/footer_html/?'+
+      'callback=' + callbackName + '&project=argocd-terraform-plugin&page=&theme=mkdocs&format=jsonp&docroot=docs&source_suffix=.md&version=' + (window['READTHEDOCS_DATA'] || { version: 'latest' }).version;
   document.getElementsByTagName('head')[0].appendChild(script);
 }, 0);
 
@@ -33,7 +33,7 @@ window.addEventListener("DOMContentLoaded", function() {
   var margin = 30;
   var headerHeight = document.getElementsByClassName("md-header")[0].offsetHeight;
   if (rtdData.version === "latest") {
-    document.querySelector("div[data-md-component=announce]").innerHTML = "<div id='announce-msg'>You are viewing the docs for an unreleased version of argocd-vault-plugin, <a href='https://argocd-vault-plugin.readthedocs.io/en/stable/'>click here to go to the latest stable version.</a></div>"
+    document.querySelector("div[data-md-component=announce]").innerHTML = "<div id='announce-msg'>You are viewing the docs for an unreleased version of argocd-terraform-plugin, <a href='https://argocd-terraform-plugin.readthedocs.io/en/stable/'>click here to go to the latest stable version.</a></div>"
     var bannerHeight = document.getElementById('announce-msg').offsetHeight + margin
     document.querySelector("header.md-header").style.top = bannerHeight +"px";
     document.querySelector('style').textContent +=
@@ -42,7 +42,7 @@ window.addEventListener("DOMContentLoaded", function() {
     "@media screen and (min-width: 60em){ .md-sidebar--secondary { height: 0;  top:"+ (bannerHeight+headerHeight)+"px !important; }}"
   }
   else if (rtdData.version !== "stable") {
-    document.querySelector("div[data-md-component=announce]").innerHTML = "<div id='announce-msg'>You are viewing the docs for a previous version of argocd-vault-plugin, <a href='https://argocd-vault-plugin.readthedocs.io/en/stable/'>click here to go to the latest stable version.</a></div>"
+    document.querySelector("div[data-md-component=announce]").innerHTML = "<div id='announce-msg'>You are viewing the docs for a previous version of argocd-terraform-plugin, <a href='https://argocd-terraform-plugin.readthedocs.io/en/stable/'>click here to go to the latest stable version.</a></div>"
     var bannerHeight = document.getElementById('announce-msg').offsetHeight + margin
     document.querySelector("header.md-header").style.top = bannerHeight +"px";
     document.querySelector('style').textContent +=
