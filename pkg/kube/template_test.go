@@ -27,14 +27,14 @@ func TestToYAML_Missing_Placeholders(t *testing.T) {
 					"name":      "some-resource",
 				},
 				"stringData": map[string]interface{}{
-					"MY_SECRET_STRING": "<string>",
+					"MY_SECRET_STRING": "<terraform:string>",
 				},
 			},
 			Data: map[string]interface{}{},
 		},
 	}
 
-	expectedErr := "Replace: could not replace all placeholders in Template:\nreplaceString: missing Vault value for placeholder string in string MY_SECRET_STRING: <string>"
+	expectedErr := "Replace: could not replace all placeholders in Template:\nreplaceString: missing Vault value for placeholder terraform:string in string MY_SECRET_STRING: <terraform:string>"
 
 	err := d.Replace()
 	if err == nil {
@@ -64,7 +64,7 @@ func TestToYAML_Missing_PlaceholdersSpecificPath(t *testing.T) {
 					"name":      "some-resource",
 				},
 				"stringData": map[string]interface{}{
-					"MY_SECRET_STRING": "<path:somewhere#string>",
+					"MY_SECRET_STRING": "<terraform:path:somewhere#string>",
 				},
 			},
 			Backend: &mv,
@@ -74,7 +74,7 @@ func TestToYAML_Missing_PlaceholdersSpecificPath(t *testing.T) {
 		},
 	}
 
-	expectedErr := "Replace: could not replace all placeholders in Template:\nreplaceString: missing Vault value for placeholder path:somewhere#string in string MY_SECRET_STRING: <path:somewhere#string>"
+	expectedErr := "Replace: could not replace all placeholders in Template:\nreplaceString: missing Vault value for placeholder terraform:path:somewhere#string in string MY_SECRET_STRING: <terraform:path:somewhere#string>"
 
 	err := d.Replace()
 	if err == nil {
@@ -282,7 +282,7 @@ func TestNewTemplate(t *testing.T) {
 					"name":      "my-app",
 				},
 				"data": map[string]interface{}{
-					"new-value": "<path:/path/to/secret#password#2>",
+					"new-value": "<terraform:path:/path/to/secret#password#2>",
 					"old-value": "<password>",
 				},
 			},
@@ -345,7 +345,7 @@ func TestNewTemplate(t *testing.T) {
 					"name":      "my-app",
 				},
 				"data": map[string]interface{}{
-					"old-value": "<path:/path/to/secret#password#1>",
+					"old-value": "<terraform:path:/path/to/secret#password#1>",
 					"new-value": "<password>",
 				},
 			},
@@ -621,7 +621,7 @@ func TestToYAML_CRD_FakePlaceholders(t *testing.T) {
 				},
 				"data": map[string]interface{}{
 					"description":    "supported options: <beep>, <boop>",
-					"A_SHELL_SCRIPT": "bx login --apikey <path:a/path#apikey>",
+					"A_SHELL_SCRIPT": "bx login --apikey <terraform:path:a/path#apikey>",
 				},
 			},
 			Backend: &mv,

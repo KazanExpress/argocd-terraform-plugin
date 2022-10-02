@@ -23,7 +23,7 @@ func (e *missingKeyError) Error() string {
 	return e.s
 }
 
-var genericPlaceholder, _ = regexp.Compile(`(?mU)<terraform(.*)>`)
+var genericPlaceholder, _ = regexp.Compile(`(?mU)<terraform:(.*)>`)
 var specificPathPlaceholder, _ = regexp.Compile(`(?mU)<terraform:path:([^#]+)#([^#]+)(?:#([^#]+))?>`)
 var indivPlaceholderSyntax, _ = regexp.Compile(`(?mU)terraform:path:(?P<path>[^#]+?)#(?P<key>[^#]+?)(?:#(?P<version>.+?))??`)
 

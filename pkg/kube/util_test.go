@@ -77,7 +77,7 @@ func TestGenericReplacement_specificPath(t *testing.T) {
 
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "<path:blah/blah#namespace>",
+			"namespace": "<terraform:path:blah/blah#namespace>",
 			"name":      "<name>",
 		},
 		Data: map[string]interface{}{
@@ -126,10 +126,10 @@ func TestGenericReplacement_specificPathVersioned(t *testing.T) {
 
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"first":  "<path:blah/blah#version#1>",
-			"second": "<path:blah/blah#version#2>",
-			"third":  "<path:blah/blah#version#3>",
-			"latest": "<path:blah/blah#version>",
+			"first":  "<terraform:path:blah/blah#version#1>",
+			"second": "<terraform:path:blah/blah#version#2>",
+			"third":  "<terraform:path:blah/blah#version#3>",
+			"latest": "<terraform:path:blah/blah#version>",
 		},
 		Data:    map[string]interface{}{},
 		Backend: &mv,
@@ -168,7 +168,7 @@ func TestGenericReplacement_specificPathNoAnnotation(t *testing.T) {
 	// and NOT the generic one, since the generic Vault path is undefined
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace":   "<path:blah/blah#namespace>",
+			"namespace":   "<terraform:path:blah/blah#namespace>",
 			"description": "for example, write <key>",
 		},
 		Data: map[string]interface{}{
