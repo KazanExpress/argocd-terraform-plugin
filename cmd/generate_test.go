@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/helpers"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/helpers"
 	"github.com/hashicorp/vault/api"
 	"github.com/hashicorp/vault/vault"
 )
@@ -18,11 +18,11 @@ var client *api.Client
 
 func TestMain(t *testing.T) {
 	cluster, roleid, secretid = helpers.CreateTestAppRoleVault(t)
-	os.Setenv("AVP_TYPE", "vault")
+	os.Setenv("ATP_TYPE", "vault")
 	os.Setenv("VAULT_ADDR", cluster.Cores[0].Client.Address())
-	os.Setenv("AVP_AUTH_TYPE", "approle")
-	os.Setenv("AVP_SECRET_ID", secretid)
-	os.Setenv("AVP_ROLE_ID", roleid)
+	os.Setenv("ATP_AUTH_TYPE", "approle")
+	os.Setenv("ATP_SECRET_ID", secretid)
+	os.Setenv("ATP_ROLE_ID", roleid)
 	os.Setenv("VAULT_SKIP_VERIFY", "true")
 
 	t.Run("will throw an error expecting arguments", func(t *testing.T) {
@@ -224,10 +224,10 @@ func TestMain(t *testing.T) {
 		}
 	})
 
-	os.Unsetenv("AVP_TYPE")
+	os.Unsetenv("ATP_TYPE")
 	os.Unsetenv("VAULT_ADDR")
-	os.Unsetenv("AVP_AUTH_TYPE")
-	os.Unsetenv("AVP_SECRET_ID")
-	os.Unsetenv("AVP_ROLE_ID")
+	os.Unsetenv("ATP_AUTH_TYPE")
+	os.Unsetenv("ATP_SECRET_ID")
+	os.Unsetenv("ATP_ROLE_ID")
 	os.Unsetenv("VAULT_SKIP_VERIFY")
 }

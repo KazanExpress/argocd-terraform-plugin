@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/backends"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/kube"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/types"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/utils"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/backends"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/kube"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/types"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/utils"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/spf13/viper"
@@ -51,7 +51,7 @@ func New(v *viper.Viper, co *Options) (*Config, error) {
 	utils.VerboseToStdErr("reading configuration from environment, overriding any previous settings")
 	v.AutomaticEnv()
 
-	utils.VerboseToStdErr("AVP configured with the following settings:\n")
+	utils.VerboseToStdErr("ATP configured with the following settings:\n")
 	for k, viperValue := range v.AllSettings() {
 		utils.VerboseToStdErr("%s: %s\n", k, viperValue)
 	}

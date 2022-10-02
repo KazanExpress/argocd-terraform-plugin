@@ -12,7 +12,7 @@ spec:
           mountPath: /usr/local/bin/argocd-terraform-plugin
           subPath: argocd-terraform-plugin
 
-        # Note: AVP config (for the secret manager, etc) can be passed in several ways. This is just one example
+        # Note: ATP config (for the secret manager, etc) can be passed in several ways. This is just one example
         # https://argocd-terraform-plugin.readthedocs.io/en/stable/config/
         envFrom:
           - secretRef:
@@ -28,17 +28,17 @@ spec:
         # Don't forget to update this to whatever the stable release version is
         # Note the lack of the `v` prefix unlike the git tag
         env:
-          - name: AVP_VERSION
+          - name: ATP_VERSION
             value: "1.7.0"
         args:
           - >-
             wget -O argocd-terraform-plugin
-            https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${AVP_VERSION}/argocd-terraform-plugin_${AVP_VERSION}_linux_amd64 &&
+            https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${ATP_VERSION}/argocd-terraform-plugin_${ATP_VERSION}_linux_amd64 &&
             chmod +x argocd-terraform-plugin &&
             mv argocd-terraform-plugin /custom-tools/
         volumeMounts:
           - mountPath: /custom-tools
             name: custom-tools
 
-      # Not strictly necessary, but required for passing AVP configuration from a secret and for using Kubernetes auth to Hashicorp Vault
+      # Not strictly necessary, but required for passing ATP configuration from a secret and for using Kubernetes auth to Hashicorp Vault
       automountServiceAccountToken: true

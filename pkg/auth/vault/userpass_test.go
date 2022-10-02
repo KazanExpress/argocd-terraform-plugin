@@ -1,9 +1,10 @@
 package vault_test
 
 import (
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/auth/vault"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/helpers"
 	"testing"
+
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/auth/vault"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/helpers"
 )
 
 func TestUserPassLogin(t *testing.T) {

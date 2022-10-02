@@ -156,7 +156,7 @@ data:
 ##### Automatically ignoring `<placeholder>` strings
 The plugin tries to be helpful and will ignore strings in the format `<string>` if the `avp.kubernetes.io/path` annotation is missing, and only try to replace [inline-path placeholders](#inline-path-placeholders)
 
-This can be very useful when using AVP with YAML/JSON that uses `<string>`'s for other purposes, for example in CRD's with usage information:
+This can be very useful when using ATP with YAML/JSON that uses `<string>`'s for other purposes, for example in CRD's with usage information:
 ```yaml
 kind: CustomResourceDefinition
 apiVersion: v1
@@ -211,7 +211,7 @@ fieldRef:
 ```
 
 ##### Removing keys with missing values
-By default, AVP will return an error if there is a `<placeholder>` that has no matching key in the secrets manager.
+By default, ATP will return an error if there is a `<placeholder>` that has no matching key in the secrets manager.
 
 You can override this by using the annotation `avp.kubernetes.io/remove-missing`. This will remove keys whose values are missing from Vault from the entire YAML.
 
@@ -343,8 +343,8 @@ spec:
 #### Detecting errors in chained commands
 
 By default argocd-terraform-plugin will read valid kubernetes YAMLs and replace variables with values from Vault.
-If a previous command failed and outputs nothing to stdout and AVP reads the input from stdin with
-the `-` argument, AVP will forward an empty YAML output downstream. To catch and prevent accientental errors
+If a previous command failed and outputs nothing to stdout and ATP reads the input from stdin with
+the `-` argument, ATP will forward an empty YAML output downstream. To catch and prevent accientental errors
 in chained commands, please use the `-o pipefail` bash option like so:
 
 ```bash

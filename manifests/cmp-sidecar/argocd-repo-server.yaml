@@ -24,12 +24,12 @@ spec:
       - name: download-tools
         image: registry.access.redhat.com/ubi8
         env:
-          - name: AVP_VERSION
+          - name: ATP_VERSION
             value: 1.11.0
         command: [sh, -c]
         args:
           - >-
-            curl -L https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v$(AVP_VERSION)/argocd-terraform-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-terraform-plugin &&
+            curl -L https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v$(ATP_VERSION)/argocd-terraform-plugin_$(ATP_VERSION)_linux_amd64 -o argocd-terraform-plugin &&
             chmod +x argocd-terraform-plugin &&
             mv argocd-terraform-plugin /custom-tools/
 

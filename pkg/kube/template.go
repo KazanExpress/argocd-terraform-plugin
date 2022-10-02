@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/types"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/utils"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/types"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/utils"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	yaml "sigs.k8s.io/yaml"
 )
@@ -28,8 +28,8 @@ type Template struct {
 // NewTemplate returns a *Template given the template's data, and a VaultType
 func NewTemplate(template unstructured.Unstructured, backend types.Backend) (*Template, error) {
 	annotations := template.GetAnnotations()
-	path := annotations[types.AVPPathAnnotation]
-	version := annotations[types.AVPSecretVersionAnnotation]
+	path := annotations[types.ATPPathAnnotation]
+	version := annotations[types.ATPSecretVersionAnnotation]
 
 	var err error
 	var data map[string]interface{}
@@ -39,7 +39,7 @@ func NewTemplate(template unstructured.Unstructured, backend types.Backend) (*Te
 			return nil, err
 		}
 
-		utils.VerboseToStdErr("calling GetSecrets to get all secrets from backend because %s is set to %s", types.AVPPathAnnotation, path)
+		utils.VerboseToStdErr("calling GetSecrets to get all secrets from backend because %s is set to %s", types.ATPPathAnnotation, path)
 	}
 
 	return &Template{

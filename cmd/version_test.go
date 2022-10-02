@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/version"
+	"github.com/KazanExpress/argocd-terraform-plugin/version"
 )
 
 func TestVersion(t *testing.T) {

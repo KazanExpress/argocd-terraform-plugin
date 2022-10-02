@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/helpers"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/utils"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/helpers"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/utils"
 )
 
 func writeToken(token string) error {

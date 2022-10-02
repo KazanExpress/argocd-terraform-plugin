@@ -9,10 +9,10 @@ We currently support retrieving secrets from KV-V1 and KV-V2 backends.
 For AppRole Authentication, these are the required parameters:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
-AVP_TYPE: vault
-AVP_AUTH_TYPE: approle
-AVP_ROLE_ID: Your AppRole Role ID
-AVP_SECRET_ID: Your AppRole Secret ID
+ATP_TYPE: vault
+ATP_AUTH_TYPE: approle
+ATP_ROLE_ID: Your AppRole Role ID
+ATP_SECRET_ID: Your AppRole Secret ID
 ```
 
 ##### Vault Token Authentication
@@ -20,8 +20,8 @@ For Vault Token Authentication, these are the required parameters:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
 VAULT_TOKEN: Your Vault token
-AVP_TYPE: vault
-AVP_AUTH_TYPE: token
+ATP_TYPE: vault
+ATP_AUTH_TYPE: token
 ```
 
 This option may be the easiest to test with locally, depending on your Vault setup.
@@ -30,9 +30,9 @@ This option may be the easiest to test with locally, depending on your Vault set
 For Github Authentication, these are the required parameters:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
-AVP_TYPE: vault
-AVP_AUTH_TYPE: github
-AVP_GITHUB_TOKEN: Your Github Personal Access Token
+ATP_TYPE: vault
+ATP_AUTH_TYPE: github
+ATP_GITHUB_TOKEN: Your Github Personal Access Token
 ```
 
 ##### Kubernetes Authentication
@@ -99,21 +99,21 @@ In order to use Kubernetes Authentication a couple of things are required.
 Once Argo CD and Kubernetes are configured, you can then set the required environment variables for the plugin:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
-AVP_TYPE: vault
-AVP_AUTH_TYPE: k8s
-AVP_K8S_MOUNT_PATH: Mount Path of your kubernetes Auth (optional)
-AVP_K8S_ROLE: Your Kuberetes Auth Role
-AVP_K8S_TOKEN_PATH: Path to JWT (optional)
+ATP_TYPE: vault
+ATP_AUTH_TYPE: k8s
+ATP_K8S_MOUNT_PATH: Mount Path of your kubernetes Auth (optional)
+ATP_K8S_ROLE: Your Kuberetes Auth Role
+ATP_K8S_TOKEN_PATH: Path to JWT (optional)
 ```
 
 ##### Userpass Authentication
 For Userpass Authentication, these are the required parameters:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
-AVP_TYPE: vault
-AVP_AUTH_TYPE: userpass
-AVP_USERNAME: Your Username
-AVP_PASSWORD: Your Password
+ATP_TYPE: vault
+ATP_AUTH_TYPE: userpass
+ATP_USERNAME: Your Username
+ATP_PASSWORD: Your Password
 ```
 
 ##### Examples
@@ -180,9 +180,9 @@ We support all types of secrets that can be retrieved from IBM Cloud Secret Mana
 ##### IAM Authentication
 For IAM Authentication, these are the required parameters:
 ```
-AVP_IBM_INSTANCE_URL or VAULT_ADDR: Your IBM Cloud Secret Manager Endpoint
-AVP_TYPE: ibmsecretsmanager
-AVP_IBM_API_KEY: Your IBM Cloud API Key
+ATP_IBM_INSTANCE_URL or VAULT_ADDR: Your IBM Cloud Secret Manager Endpoint
+ATP_TYPE: ibmsecretsmanager
+ATP_IBM_API_KEY: Your IBM Cloud API Key
 ```
 
 ##### Examples
@@ -242,7 +242,7 @@ Supported credentials and the order in which they are loaded are described [here
 
 These are the parameters for AWS:
 ```
-AVP_TYPE: awssecretsmanager
+ATP_TYPE: awssecretsmanager
 AWS_REGION: Your AWS Region (Optional: defaults to us-east-2)
 ```
 
@@ -321,8 +321,8 @@ type: Opaque
 
 **NOTE**
 For cross account access there is the need to configure the correct permissions between accounts, please check:
-https://aws.amazon.com/premiumsupport/knowledge-center/secrets-manager-share-between-accounts  
-https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_examples_cross.html  
+https://aws.amazon.com/premiumsupport/knowledge-center/secrets-manager-share-between-accounts
+https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_examples_cross.html
 
 ### GCP Secret Manager
 
@@ -331,7 +331,7 @@ Refer to the [Authentication Overview](https://cloud.google.com/docs/authenticat
 
 These are the parameters for GCP:
 ```
-AVP_TYPE: gcpsecretmanager
+ATP_TYPE: gcpsecretmanager
 ```
 
 ##### Examples
@@ -395,7 +395,7 @@ For Azure, `path` is the unique name of your key vault.
 
 These are the parameters for Azure:
 ```
-AVP_TYPE: azurekeyvault
+ATP_TYPE: azurekeyvault
 ```
 
 ##### Examples
@@ -450,7 +450,7 @@ For SOPS, `path` is file path to a JSON or YAML file encrypted using SOPS  and `
 
 These are the parameters for SOPS:
 ```
-AVP_TYPE: sops
+ATP_TYPE: sops
 ```
 
 ##### Examples
@@ -507,10 +507,10 @@ Refer to the [IAM overview](https://cloud.yandex.com/en/docs/iam/concepts/) for 
 
 These are the parameters for YCL:
 ```
-AVP_TYPE: yandexcloudlockbox
-AVP_YCL_SERVICE_ACCOUNT_ID: Service account ID
-AVP_YCL_KEY_ID: Service account authorized Key ID
-AVP_YCL_PRIVATE_KEY: Service account authorized private key
+ATP_TYPE: yandexcloudlockbox
+ATP_YCL_SERVICE_ACCOUNT_ID: Service account ID
+ATP_YCL_KEY_ID: Service account authorized Key ID
+ATP_YCL_PRIVATE_KEY: Service account authorized private key
 ```
 ##### Examples
 
@@ -567,7 +567,7 @@ Refer to the [1Password Secrets Automation overview](https://support.1password.c
 These are the parameters for 1Password Connect:
 
 ```
-AVP_TYPE: 1passwordconnect
+ATP_TYPE: 1passwordconnect
 OP_CONNECT_TOKEN: Your 1Password Connect access token
 OP_CONNECT_HOST: The hostname of your 1Password Connect server
 ```

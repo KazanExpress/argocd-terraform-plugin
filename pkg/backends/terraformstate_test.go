@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/backends"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/backends"
 	"github.com/minio/minio-go/v7"
 )
 

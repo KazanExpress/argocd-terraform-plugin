@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/helpers"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/types"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/helpers"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/types"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
@@ -17,7 +17,7 @@ func TestToYAML_Missing_Placeholders(t *testing.T) {
 		Resource{
 			Kind: "Secret",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "v1",
@@ -93,8 +93,8 @@ func TestToYAML_RemoveMissing(t *testing.T) {
 		Resource{
 			Kind: "Secret",
 			Annotations: map[string]string{
-				types.AVPPathAnnotation:          "path/to/secret",
-				types.AVPRemoveMissingAnnotation: "true",
+				types.ATPPathAnnotation:          "path/to/secret",
+				types.ATPRemoveMissingAnnotation: "true",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "v1",
@@ -103,8 +103,8 @@ func TestToYAML_RemoveMissing(t *testing.T) {
 					"namespace": "default",
 					"name":      "my-app",
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation:          "path/to/secret",
-						types.AVPRemoveMissingAnnotation: "true",
+						types.ATPPathAnnotation:          "path/to/secret",
+						types.ATPRemoveMissingAnnotation: "true",
 					},
 				},
 				"data": map[string]interface{}{
@@ -147,8 +147,8 @@ func TestToYAML_RemoveMissingInvalidResource(t *testing.T) {
 		Resource{
 			Kind: "Service",
 			Annotations: map[string]string{
-				types.AVPRemoveMissingAnnotation: "true",
-				types.AVPPathAnnotation:          "path/to/secret",
+				types.ATPRemoveMissingAnnotation: "true",
+				types.ATPPathAnnotation:          "path/to/secret",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "v1",
@@ -157,8 +157,8 @@ func TestToYAML_RemoveMissingInvalidResource(t *testing.T) {
 					"namespace": "default",
 					"name":      "<name>",
 					"annotations": map[string]interface{}{
-						types.AVPRemoveMissingAnnotation: "true",
-						types.AVPPathAnnotation:          "path/to/secret",
+						types.ATPRemoveMissingAnnotation: "true",
+						types.ATPPathAnnotation:          "path/to/secret",
 					},
 				},
 				"spec": map[string]interface{}{
@@ -203,7 +203,7 @@ func TestNewTemplate(t *testing.T) {
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
 						types.VaultKVVersionAnnotation: "1",
-						types.AVPPathAnnotation:        "path/to/secret",
+						types.ATPPathAnnotation:        "path/to/secret",
 					},
 					"namespace": "default",
 					"name":      "my-app",
@@ -239,7 +239,7 @@ func TestNewTemplate(t *testing.T) {
 					"namespace": "default",
 					"name":      "my-app",
 					"annotations": map[string]interface{}{
-						types.AVPIgnoreAnnotation: "True",
+						types.ATPIgnoreAnnotation: "True",
 					},
 				},
 				"spec": map[string]interface{}{
@@ -275,8 +275,8 @@ func TestNewTemplate(t *testing.T) {
 				"apiVersion": "v1",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPSecretVersionAnnotation: "1",
-						types.AVPPathAnnotation:          "path/to/secret",
+						types.ATPSecretVersionAnnotation: "1",
+						types.ATPPathAnnotation:          "path/to/secret",
 					},
 					"namespace": "default",
 					"name":      "my-app",
@@ -306,8 +306,8 @@ func TestNewTemplate(t *testing.T) {
 			"apiVersion": "v1",
 			"metadata": map[string]interface{}{
 				"annotations": map[string]interface{}{
-					types.AVPSecretVersionAnnotation: "1",
-					types.AVPPathAnnotation:          "path/to/secret",
+					types.ATPSecretVersionAnnotation: "1",
+					types.ATPPathAnnotation:          "path/to/secret",
 				},
 				"namespace": "default",
 				"name":      "my-app",
@@ -339,7 +339,7 @@ func TestNewTemplate(t *testing.T) {
 				"apiVersion": "v1",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path/to/secret",
+						types.ATPPathAnnotation: "path/to/secret",
 					},
 					"namespace": "default",
 					"name":      "my-app",
@@ -369,7 +369,7 @@ func TestNewTemplate(t *testing.T) {
 			"apiVersion": "v1",
 			"metadata": map[string]interface{}{
 				"annotations": map[string]interface{}{
-					types.AVPPathAnnotation: "path/to/secret",
+					types.ATPPathAnnotation: "path/to/secret",
 				},
 				"namespace": "default",
 				"name":      "my-app",
@@ -391,14 +391,14 @@ func TestToYAML_Deployment(t *testing.T) {
 		Resource{
 			Kind: "Deployment",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "apps/v1",
 				"kind":       "Deployment",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path",
+						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
 					"name":      "<name>",
@@ -447,14 +447,14 @@ func TestToYAML_Service(t *testing.T) {
 		Resource{
 			Kind: "Service",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"kind":       "Service",
 				"apiVersion": "v1",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path",
+						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
 					"name":      "<name>",
@@ -503,14 +503,14 @@ func TestToYAML_Secret_PlaceholderedData(t *testing.T) {
 		Resource{
 			Kind: "Secret",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "v1",
 				"kind":       "Secret",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation:        "path",
+						types.ATPPathAnnotation:        "path",
 						types.VaultKVVersionAnnotation: "1",
 					},
 					"namespace": "default",
@@ -555,7 +555,7 @@ func TestToYAML_CRD_PlaceholderedData(t *testing.T) {
 		Resource{
 			Kind: "SomeCustomResource",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "v1",
@@ -655,14 +655,14 @@ func TestToYAML_Secret_HardcodedData(t *testing.T) {
 		Resource{
 			Kind: "Secret",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "v1",
 				"kind":       "Secret",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path",
+						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
 					"name":      "my-app",
@@ -700,14 +700,14 @@ func TestToYAML_Secret_MixedData(t *testing.T) {
 		Resource{
 			Kind: "Secret",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "v1",
 				"kind":       "Secret",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path",
+						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
 					"name":      "<name>",
@@ -752,14 +752,14 @@ func TestToYAML_Secret_PlaceholderedStringData(t *testing.T) {
 		Resource{
 			Kind: "Secret",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "v1",
 				"kind":       "Secret",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path",
+						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
 					"name":      "<name>",
@@ -803,14 +803,14 @@ func TestToYAML_ConfigMap(t *testing.T) {
 		Resource{
 			Kind: "ConfigMap",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "v1",
 				"kind":       "ConfigMap",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path",
+						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
 					"name":      "<name>",
@@ -854,14 +854,14 @@ func TestToYAML_Ingress(t *testing.T) {
 		Resource{
 			Kind: "Ingress",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "networking.k8s.io/v1",
 				"kind":       "Ingress",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path",
+						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
 					"name":      "<name>",
@@ -911,14 +911,14 @@ func TestToYAML_CronJob(t *testing.T) {
 		Resource{
 			Kind: "CronJob",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "batch/v1beta1",
 				"kind":       "CronJob",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path",
+						types.ATPPathAnnotation: "path",
 					},
 					"name": "<name>",
 				},
@@ -973,14 +973,14 @@ func TestToYAML_Job(t *testing.T) {
 		Resource{
 			Kind: "Job",
 			Annotations: map[string]string{
-				(types.AVPPathAnnotation): "",
+				(types.ATPPathAnnotation): "",
 			},
 			TemplateData: map[string]interface{}{
 				"apiVersion": "batch/v1",
 				"kind":       "Job",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.AVPPathAnnotation: "path",
+						types.ATPPathAnnotation: "path",
 					},
 					"name": "<name>",
 				},

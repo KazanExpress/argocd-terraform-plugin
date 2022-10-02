@@ -4,24 +4,24 @@ In order to use the plugin in Argo CD you have 4 distinct options:
 
 - Installation via `argocd-cm` ConfigMap
 
-    - Download AVP in a volume and control everything as Kubernetes manifests
+    - Download ATP in a volume and control everything as Kubernetes manifests
         - Available as a pre-built Kustomize app: <https://github.com/KazanExpress/argocd-terraform-plugin/blob/main/manifests/cmp-configmap>
 
-    - Create a custom `argocd-repo-server` image with AVP and supporting tools pre-installed
+    - Create a custom `argocd-repo-server` image with ATP and supporting tools pre-installed
 
 - Installation via a sidecar container [(new, starting with Argo CD v2.4.0)](https://argo-cd.readthedocs.io/en/stable/user-guide/config-management-plugins/#installing-a-cmp)
 
-    - Download AVP and supporting tools into a volume and control everything as Kubernetes manifests, using an off-the-shelf sidecar image
+    - Download ATP and supporting tools into a volume and control everything as Kubernetes manifests, using an off-the-shelf sidecar image
 
         - Available as a pre-built Kustomize app: <https://github.com/KazanExpress/argocd-terraform-plugin/blob/main/manifests/cmp-sidecar>
 
-    - Create a custom sidecar image with AVP and supporting tools pre-installed
+    - Create a custom sidecar image with ATP and supporting tools pre-installed
 
 ### Explaining your options
 
 First, the Argo CD docs provide valuable information on how to extend the `argocd-repo-server` with additonal tools or a custom built image: <https://argoproj.github.io/argo-cd/operator-manual/custom_tools/>.
 
-Before version 2.4.0 of Argo CD, the only way to install AVP was as an additional binary that ran inside the `argocd-repo-server` container when specifically told by including the following YAML in an Application mainfest:
+Before version 2.4.0 of Argo CD, the only way to install ATP was as an additional binary that ran inside the `argocd-repo-server` container when specifically told by including the following YAML in an Application mainfest:
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -63,7 +63,7 @@ spec:
           mountPath: /usr/local/bin/argocd-terraform-plugin
           subPath: argocd-terraform-plugin
 
-        # Note: AVP config (for the secret manager, etc) can be passed in several ways. This is just one example
+        # Note: ATP config (for the secret manager, etc) can be passed in several ways. This is just one example
         # https://argocd-terraform-plugin.readthedocs.io/en/stable/config/
         envFrom:
           - secretRef:
@@ -79,19 +79,19 @@ spec:
         # Don't forget to update this to whatever the stable release version is
         # Note the lack of the `v` prefix unlike the git tag
         env:
-          - name: AVP_VERSION
+          - name: ATP_VERSION
             value: "1.7.0"
         args:
           - >-
             wget -O argocd-terraform-plugin
-            https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${AVP_VERSION}/argocd-terraform-plugin_${AVP_VERSION}_linux_amd64 &&
+            https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${ATP_VERSION}/argocd-terraform-plugin_${ATP_VERSION}_linux_amd64 &&
             chmod +x argocd-terraform-plugin &&
             mv argocd-terraform-plugin /custom-tools/
         volumeMounts:
           - mountPath: /custom-tools
             name: custom-tools
 
-      # Not strictly necessary, but required for passing AVP configuration from a secret and for using Kubernetes auth to Hashicorp Vault
+      # Not strictly necessary, but required for passing ATP configuration from a secret and for using Kubernetes auth to Hashicorp Vault
       automountServiceAccountToken: true
 ```
 
@@ -114,10 +114,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install the AVP plugin (as root so we can copy to /usr/local/bin)
-ENV AVP_VERSION=0.2.2
+# Install the ATP plugin (as root so we can copy to /usr/local/bin)
+ENV ATP_VERSION=0.2.2
 ENV BIN=argocd-terraform-plugin
-RUN curl -L -o ${BIN} https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${AVP_VERSION}/argocd-terraform-plugin_${AVP_VERSION}_linux_amd64
+RUN curl -L -o ${BIN} https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${ATP_VERSION}/argocd-terraform-plugin_${ATP_VERSION}_linux_amd64
 RUN chmod +x ${BIN}
 RUN mv ${BIN} /usr/local/bin
 
@@ -189,12 +189,12 @@ spec:
       - name: download-tools
         image: registry.access.redhat.com/ubi8
         env:
-          - name: AVP_VERSION
+          - name: ATP_VERSION
             value: 1.11.0
         command: [sh, -c]
         args:
           - >-
-            curl -L https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v$(AVP_VERSION)/argocd-terraform-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-terraform-plugin &&
+            curl -L https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v$(ATP_VERSION)/argocd-terraform-plugin_$(ATP_VERSION)_linux_amd64 -o argocd-terraform-plugin &&
             chmod +x argocd-terraform-plugin &&
             mv argocd-terraform-plugin /custom-tools/
         volumeMounts:
@@ -273,10 +273,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install the AVP plugin (as root so we can copy to /usr/local/bin)
-ENV AVP_VERSION=1.11.0
+# Install the ATP plugin (as root so we can copy to /usr/local/bin)
+ENV ATP_VERSION=1.11.0
 ENV BIN=argocd-terraform-plugin
-RUN curl -L -o ${BIN} https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${AVP_VERSION}/argocd-terraform-plugin_${AVP_VERSION}_linux_amd64
+RUN curl -L -o ${BIN} https://github.com/KazanExpress/argocd-terraform-plugin/releases/download/v${ATP_VERSION}/argocd-terraform-plugin_${ATP_VERSION}_linux_amd64
 RUN chmod +x ${BIN}
 RUN mv ${BIN} /usr/local/bin
 

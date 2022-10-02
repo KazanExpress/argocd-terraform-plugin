@@ -99,7 +99,7 @@ func jsonPath(params []string, input interface{}) (interface{}, error) {
 		return nil, fmt.Errorf("invalid parameters")
 	}
 
-	jp := k8jsonpath.New("AVPJsonPath")
+	jp := k8jsonpath.New("ATPJsonPath")
 	jp.AllowMissingKeys(false)
 	err := jp.Parse(strings.Join(params, " "))
 	if err != nil {

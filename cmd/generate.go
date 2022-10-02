@@ -7,10 +7,10 @@ import (
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/config"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/kube"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/types"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/utils"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/config"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/kube"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/types"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -83,14 +83,14 @@ func NewGenerateCommand() *cobra.Command {
 				}
 
 				annotations := manifest.GetAnnotations()
-				avpIgnore, _ := strconv.ParseBool(annotations[types.AVPIgnoreAnnotation])
+				avpIgnore, _ := strconv.ParseBool(annotations[types.ATPIgnoreAnnotation])
 				if !avpIgnore {
 					err = template.Replace()
 					if err != nil {
 						return err
 					}
 				} else {
-					utils.VerboseToStdErr("skipping %s.%s because %s annotation is present", manifest.GetNamespace(), manifest.GetName(), types.AVPIgnoreAnnotation)
+					utils.VerboseToStdErr("skipping %s.%s because %s annotation is present", manifest.GetNamespace(), manifest.GetName(), types.ATPIgnoreAnnotation)
 				}
 
 				output, err := template.ToYAML()

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/config"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/config"
 	"github.com/spf13/viper"
 )
 
@@ -20,103 +20,103 @@ func TestNewConfig(t *testing.T) {
 	}{
 		{
 			map[string]interface{}{
-				"AVP_TYPE":         "vault",
-				"AVP_AUTH_TYPE":    "github",
-				"AVP_GITHUB_TOKEN": "token",
+				"ATP_TYPE":         "vault",
+				"ATP_AUTH_TYPE":    "github",
+				"ATP_GITHUB_TOKEN": "token",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "token",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "token",
 				"VAULT_TOKEN":   "token",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "approle",
-				"AVP_ROLE_ID":   "role_id",
-				"AVP_SECRET_ID": "secret_id",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "approle",
+				"ATP_ROLE_ID":   "role_id",
+				"ATP_SECRET_ID": "secret_id",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":           "vault",
-				"AVP_AUTH_TYPE":      "k8s",
-				"AVP_K8S_MOUNT_PATH": "mount_point",
-				"AVP_K8S_ROLE":       "role",
-				"AVP_K8S_TOKEN_PATH": "toke_path",
+				"ATP_TYPE":           "vault",
+				"ATP_AUTH_TYPE":      "k8s",
+				"ATP_K8S_MOUNT_PATH": "mount_point",
+				"ATP_K8S_ROLE":       "role",
+				"ATP_K8S_TOKEN_PATH": "toke_path",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "k8s",
-				"AVP_K8S_ROLE":  "role",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "k8s",
+				"ATP_K8S_ROLE":  "role",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":           "vault",
-				"AVP_AUTH_TYPE":      "k8s",
-				"AVP_K8S_MOUNT_PATH": "mount_point",
-				"AVP_K8S_ROLE":       "role",
+				"ATP_TYPE":           "vault",
+				"ATP_AUTH_TYPE":      "k8s",
+				"ATP_K8S_MOUNT_PATH": "mount_point",
+				"ATP_K8S_ROLE":       "role",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":       "vault",
-				"AVP_AUTH_TYPE":  "k8s",
-				"AVP_MOUNT_PATH": "mount_point",
-				"AVP_K8S_ROLE":   "role",
+				"ATP_TYPE":       "vault",
+				"ATP_AUTH_TYPE":  "k8s",
+				"ATP_MOUNT_PATH": "mount_point",
+				"ATP_K8S_ROLE":   "role",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "userpass",
-				"AVP_USERNAME":  "username",
-				"AVP_PASSWORD":  "password",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "userpass",
+				"ATP_USERNAME":  "username",
+				"ATP_PASSWORD":  "password",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":       "vault",
-				"AVP_AUTH_TYPE":  "userpass",
-				"AVP_MOUNT_PATH": "mount_path",
-				"AVP_USERNAME":   "username",
-				"AVP_PASSWORD":   "password",
+				"ATP_TYPE":       "vault",
+				"ATP_AUTH_TYPE":  "userpass",
+				"ATP_MOUNT_PATH": "mount_path",
+				"ATP_USERNAME":   "username",
+				"ATP_PASSWORD":   "password",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":             "ibmsecretsmanager",
-				"AVP_IBM_API_KEY":      "token",
-				"AVP_IBM_INSTANCE_URL": "http://ibm",
+				"ATP_TYPE":             "ibmsecretsmanager",
+				"ATP_IBM_API_KEY":      "token",
+				"ATP_IBM_INSTANCE_URL": "http://ibm",
 			},
 			"*backends.IBMSecretsManager",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":        "ibmsecretsmanager",
-				"AVP_IBM_API_KEY": "token",
+				"ATP_TYPE":        "ibmsecretsmanager",
+				"ATP_IBM_API_KEY": "token",
 				"VAULT_ADDR":      "http://ibm",
 			},
 			"*backends.IBMSecretsManager",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":              "awssecretsmanager",
+				"ATP_TYPE":              "awssecretsmanager",
 				"AWS_REGION":            "us-west-1",
 				"AWS_ACCESS_KEY_ID":     "id",
 				"AWS_SECRET_ACCESS_KEY": "key",
@@ -125,7 +125,7 @@ func TestNewConfig(t *testing.T) {
 		},
 		{ // auth via web identity federation is also possible
 			map[string]interface{}{
-				"AVP_TYPE":                    "awssecretsmanager",
+				"ATP_TYPE":                    "awssecretsmanager",
 				"AWS_REGION":                  "us-west-1",
 				"AWS_WEB_IDENTITY_TOKEN_FILE": "/var/run/secrets/eks.amazonaws.com/serviceaccount/token",
 				"AWS_ROLE_ARN":                "arn:aws:iam::111111111:role/argocd-repo-server-secretsmanager-my-cluster",
@@ -134,14 +134,14 @@ func TestNewConfig(t *testing.T) {
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":                       "gcpsecretmanager",
+				"ATP_TYPE":                       "gcpsecretmanager",
 				"GOOGLE_APPLICATION_CREDENTIALS": "../../fixtures/input/gac.json",
 			},
 			"*backends.GCPSecretManager",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":            "azurekeyvault",
+				"ATP_TYPE":            "azurekeyvault",
 				"AZURE_TENANT_ID":     "test",
 				"AZURE_CLIENT_ID":     "test",
 				"AZURE_CLIENT_SECRET": "test",
@@ -150,10 +150,10 @@ func TestNewConfig(t *testing.T) {
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":                   "yandexcloudlockbox",
-				"AVP_YCL_KEY_ID":             "test",
-				"AVP_YCL_SERVICE_ACCOUNT_ID": "test",
-				"AVP_YCL_PRIVATE_KEY": `-----BEGIN RSA PRIVATE KEY-----
+				"ATP_TYPE":                   "yandexcloudlockbox",
+				"ATP_YCL_KEY_ID":             "test",
+				"ATP_YCL_SERVICE_ACCOUNT_ID": "test",
+				"ATP_YCL_PRIVATE_KEY": `-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQCIwbOQ4mB4LlFKNvvkot8qnKoffHLxVu2+DNpKC3WiPbof23bf
 eHcFTj14/h3HP75dxH5GIop2C8HQzyGzScIEHMxqOpwgu8+tmHbsCAdWkbC03wQ0
 1++nHmI6kAUx0mFDAXGovyDiR132iZ5lX2hEJ2Nd2g67SHV140sB6T0vRQIDAQAB
@@ -173,13 +173,13 @@ fDGt+yaf3RaZbVwHSVLzxiXGsu1WQJde3uJeNh5c6z+5
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE": "sops",
+				"ATP_TYPE": "sops",
 			},
 			"*backends.LocalSecretManager",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":         "1passwordconnect",
+				"ATP_TYPE":         "1passwordconnect",
 				"OP_CONNECT_TOKEN": "token",
 				"OP_CONNECT_HOST":  "opconnect.somedomain.com",
 			},
@@ -187,28 +187,28 @@ fDGt+yaf3RaZbVwHSVLzxiXGsu1WQJde3uJeNh5c6z+5
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":             "terraform",
-				"AVP_TF_S3_ENDPOINT":   "endpoint.com",
-				"AVP_TF_S3_BUCKET":     "bucket",
-				"AVP_TF_S3_ACCESS_KEY": "key",
-				"AVP_TF_S3_SECRET_KEY": "key",
+				"ATP_TYPE":             "terraform",
+				"ATP_TF_S3_ENDPOINT":   "endpoint.com",
+				"ATP_TF_S3_BUCKET":     "bucket",
+				"ATP_TF_S3_ACCESS_KEY": "key",
+				"ATP_TF_S3_SECRET_KEY": "key",
 			},
 			"*backends.TerraformState",
 		},
 		{
 			map[string]interface{}{
-				"ARGOCD_ENV_AVP_TYPE":         "vault",
-				"ARGOCD_ENV_AVP_AUTH_TYPE":    "github",
-				"ARGOCD_ENV_AVP_GITHUB_TOKEN": "token",
+				"ARGOCD_ENV_ATP_TYPE":         "vault",
+				"ARGOCD_ENV_ATP_AUTH_TYPE":    "github",
+				"ARGOCD_ENV_ATP_GITHUB_TOKEN": "token",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"ARGOCD_ENV_AVP_TYPE":         "vault",
-				"AVP_TYPE":                    "not-valid-type",
-				"ARGOCD_ENV_AVP_AUTH_TYPE":    "github",
-				"ARGOCD_ENV_AVP_GITHUB_TOKEN": "token",
+				"ARGOCD_ENV_ATP_TYPE":         "vault",
+				"ATP_TYPE":                    "not-valid-type",
+				"ARGOCD_ENV_ATP_AUTH_TYPE":    "github",
+				"ARGOCD_ENV_ATP_GITHUB_TOKEN": "token",
 			},
 			"*backends.Vault",
 		},
@@ -244,7 +244,7 @@ func TestNewConfigNoType(t *testing.T) {
 }
 
 func TestNewConfigNoAuthType(t *testing.T) {
-	os.Setenv("AVP_TYPE", "vault")
+	os.Setenv("ATP_TYPE", "vault")
 	viper := viper.New()
 	_, err := config.New(viper, &config.Options{})
 	expectedError := "Must provide a supported Authentication Type, received "
@@ -252,7 +252,7 @@ func TestNewConfigNoAuthType(t *testing.T) {
 	if err.Error() != expectedError {
 		t.Errorf("expected error %s to be thrown, got %s", expectedError, err)
 	}
-	os.Unsetenv("AVP_TYPE")
+	os.Unsetenv("ATP_TYPE")
 }
 
 // Helper function that captures log output from a function call into a string
@@ -276,7 +276,7 @@ func TestNewConfigAwsRegionWarning(t *testing.T) {
 	}{
 		{ // this test issues a warning for missing AWS_REGION env var
 			map[string]interface{}{
-				"AVP_TYPE":              "awssecretsmanager",
+				"ATP_TYPE":              "awssecretsmanager",
 				"AWS_ACCESS_KEY_ID":     "id",
 				"AWS_SECRET_ACCESS_KEY": "key",
 			},
@@ -285,7 +285,7 @@ func TestNewConfigAwsRegionWarning(t *testing.T) {
 		},
 		{ // no warning is issued
 			map[string]interface{}{
-				"AVP_TYPE":              "awssecretsmanager",
+				"ATP_TYPE":              "awssecretsmanager",
 				"AWS_REGION":            "us-west-1",
 				"AWS_ACCESS_KEY_ID":     "id",
 				"AWS_SECRET_ACCESS_KEY": "key",
@@ -331,75 +331,75 @@ func TestNewConfigMissingParameter(t *testing.T) {
 	}{
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "github",
-				"AVP_GH_TOKEN":  "token",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "github",
+				"ATP_GH_TOKEN":  "token",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "token",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "token",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "approle",
-				"AVP_ROLEID":    "role_id",
-				"AVP_SECRET_ID": "secret_id",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "approle",
+				"ATP_ROLEID":    "role_id",
+				"ATP_SECRET_ID": "secret_id",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "k8s",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "k8s",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "userpass",
-				"AVP_USERNAME":  "username",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "userpass",
+				"ATP_USERNAME":  "username",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "userpass",
-				"AVP_PASSWORD":  "password",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "userpass",
+				"ATP_PASSWORD":  "password",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":      "vault",
-				"AVP_AUTH_TYPE": "userpass",
+				"ATP_TYPE":      "vault",
+				"ATP_AUTH_TYPE": "userpass",
 			},
 			"*backends.Vault",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":        "ibmsecretsmanager",
-				"AVP_IAM_API_KEY": "token",
+				"ATP_TYPE":        "ibmsecretsmanager",
+				"ATP_IAM_API_KEY": "token",
 			},
 			"*backends.IBMSecretsManager",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":   "ibmsecretsmanager",
+				"ATP_TYPE":   "ibmsecretsmanager",
 				"VAULT_ADDR": "http://vault",
 			},
 			"*backends.IBMSecretsManager",
 		},
 		{ //  WebIdentityEmptyRoleARNErr will occur if 'AWS_WEB_IDENTITY_TOKEN_FILE' was set but 'AWS_ROLE_ARN' was not set.
 			map[string]interface{}{
-				"AVP_TYPE":                    "awssecretsmanager",
+				"ATP_TYPE":                    "awssecretsmanager",
 				"AWS_REGION":                  "us-west-1",
 				"AWS_WEB_IDENTITY_TOKEN_FILE": "/var/run/secrets/eks.amazonaws.com/serviceaccount/token",
 			},
@@ -407,7 +407,7 @@ func TestNewConfigMissingParameter(t *testing.T) {
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":        "azurekeyvault",
+				"ATP_TYPE":        "azurekeyvault",
 				"AZURE_TENANT_ID": "test",
 				"AZURE_CLIENT_ID": "test",
 			},
@@ -415,15 +415,15 @@ func TestNewConfigMissingParameter(t *testing.T) {
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":                   "yandexcloudlockbox",
-				"AVP_YCL_KEY_ID":             "test",
-				"AVP_YCL_SERVICE_ACCOUNT_ID": "test",
+				"ATP_TYPE":                   "yandexcloudlockbox",
+				"ATP_YCL_KEY_ID":             "test",
+				"ATP_YCL_SERVICE_ACCOUNT_ID": "test",
 			},
 			"*backends.YandexCloudLockbox",
 		},
 		{
 			map[string]interface{}{
-				"AVP_TYPE":         "1passwordconnect",
+				"ATP_TYPE":         "1passwordconnect",
 				"OP_CONNECT_TOKEN": "token",
 			},
 			"*backends.OnePasswordConnect",
@@ -445,32 +445,32 @@ func TestNewConfigMissingParameter(t *testing.T) {
 }
 
 func TestExternalConfig(t *testing.T) {
-	os.Setenv("AVP_TYPE", "vault")
+	os.Setenv("ATP_TYPE", "vault")
 	viper := viper.New()
 	viper.SetDefault("VAULT_ADDR", "http://my-vault:8200/")
 	config.New(viper, &config.Options{})
 	if os.Getenv("VAULT_ADDR") != "http://my-vault:8200/" {
 		t.Errorf("expected VAULT_ADDR env to be set from external config, was instead: %s", os.Getenv("VAULT_ADDR"))
 	}
-	os.Unsetenv("AVP_TYPE")
+	os.Unsetenv("ATP_TYPE")
 	os.Unsetenv("VAULT_ADDR")
 }
 
-const avpConfig = `AVP_TYPE: awssecretsmanager
+const avpConfig = `ATP_TYPE: awssecretsmanager
 AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
 AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 AWS_REGION: us-west-2`
 
 var expectedEnvVars = map[string]string{
-	"AVP_TYPE":              "", // shouldn't be an env var
+	"ATP_TYPE":              "", // shouldn't be an env var
 	"AWS_ACCESS_KEY_ID":     "AKIAIOSFODNN7EXAMPLE",
 	"AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
 	"AWS_REGION":            "us-west-2",
 }
 
 func TestExternalConfigAWS(t *testing.T) {
-	// Test setting AWS_* env variables from external AVP config, note setting
-	// env vars is necessary to pass AVP config entries to the AWS golang SDK
+	// Test setting AWS_* env variables from external ATP config, note setting
+	// env vars is necessary to pass ATP config entries to the AWS golang SDK
 	tmpFile, err := ioutil.TempFile("", "avpConfig.*.yaml")
 	if err != nil {
 		t.Errorf("Cannot create temporary file %s", err)
@@ -487,8 +487,8 @@ func TestExternalConfigAWS(t *testing.T) {
 		t.Errorf("config.New returned error: %s", err)
 	}
 
-	if viper.GetString("AVP_TYPE") != "awssecretsmanager" {
-		t.Errorf("expected AVP_TYPE to be set from external config, was instead: %s", viper.GetString("AVP_TYPE"))
+	if viper.GetString("ATP_TYPE") != "awssecretsmanager" {
+		t.Errorf("expected ATP_TYPE to be set from external config, was instead: %s", viper.GetString("ATP_TYPE"))
 	}
 
 	for envVar, expected := range expectedEnvVars {
@@ -503,16 +503,16 @@ func TestExternalConfigAWS(t *testing.T) {
 }
 
 func TestExternalConfigSOPS(t *testing.T) {
-	const avpSOPSConfig = `AVP_TYPE: sops
+	const avpSOPSConfig = `ATP_TYPE: sops
 SOPS_AGE_KEY_FILE: age`
 
 	expectedSOPSEnvVars := map[string]string{
-		"AVP_TYPE":          "", // shouldn't be an env var
+		"ATP_TYPE":          "", // shouldn't be an env var
 		"SOPS_AGE_KEY_FILE": "age",
 	}
 
-	// Test setting SOPS_* env variables from external AVP config, note setting
-	// env vars is necessary to pass AVP config entries to SOPS
+	// Test setting SOPS_* env variables from external ATP config, note setting
+	// env vars is necessary to pass ATP config entries to SOPS
 	tmpFile, err := ioutil.TempFile("", "avpSOPSConfig.*.yaml")
 	if err != nil {
 		t.Errorf("Cannot create temporary file %s", err)
@@ -529,8 +529,8 @@ SOPS_AGE_KEY_FILE: age`
 		t.Errorf("config.New returned error: %s", err)
 	}
 
-	if viper.GetString("AVP_TYPE") != "sops" {
-		t.Errorf("expected AVP_TYPE to be set from external config, was instead: %s", viper.GetString("AVP_TYPE"))
+	if viper.GetString("ATP_TYPE") != "sops" {
+		t.Errorf("expected ATP_TYPE to be set from external config, was instead: %s", viper.GetString("ATP_TYPE"))
 	}
 
 	for envVar, expected := range expectedSOPSEnvVars {

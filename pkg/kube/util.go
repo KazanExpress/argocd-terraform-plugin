@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/types"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/utils"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/types"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/utils"
 	k8yaml "k8s.io/apimachinery/pkg/util/yaml"
 )
 
@@ -33,9 +33,9 @@ func replaceInner(
 	r *Resource,
 	node *map[string]interface{},
 	replacerFunc func(string, string, Resource) (interface{}, []error)) {
-	removeMissing, _ := strconv.ParseBool(r.Annotations[types.AVPRemoveMissingAnnotation])
+	removeMissing, _ := strconv.ParseBool(r.Annotations[types.ATPRemoveMissingAnnotation])
 	if removeMissing && (r.Kind != "Secret" && r.Kind != "ConfigMap") {
-		invalidRemoveMissingErr := fmt.Errorf("%s annotation can only be used on Secret or ConfigMap resources", types.AVPRemoveMissingAnnotation)
+		invalidRemoveMissingErr := fmt.Errorf("%s annotation can only be used on Secret or ConfigMap resources", types.ATPRemoveMissingAnnotation)
 		r.replacementErrors = append(r.replacementErrors, invalidRemoveMissingErr)
 		return
 	}
@@ -93,7 +93,7 @@ func replaceInner(
 			}
 
 			if removeKey {
-				utils.VerboseToStdErr("removing key %s due to %s being set on the containing manifest", key, types.AVPRemoveMissingAnnotation)
+				utils.VerboseToStdErr("removing key %s due to %s being set on the containing manifest", key, types.ATPRemoveMissingAnnotation)
 				delete(obj, key)
 			} else {
 				obj[key] = replacement
@@ -109,8 +109,8 @@ func genericReplacement(key, value string, resource Resource) (_ interface{}, er
 	// If the Vault path annotation is present, there may be placeholders with/without an explicit path
 	// so we look for those. Only if the annotation is absent do we narrow the search to placeholders with
 	// explicit paths, to prevent catching <things> that aren't placeholders
-	// See https://github.com/argoproj-labs/argocd-vault-plugin/issues/130
-	if _, pathAnnotationPresent := resource.Annotations[types.AVPPathAnnotation]; pathAnnotationPresent {
+	// See https://github.com/KazanExpress/argocd-terraform-plugin/issues/130
+	if _, pathAnnotationPresent := resource.Annotations[types.ATPPathAnnotation]; pathAnnotationPresent {
 		placeholderRegex = genericPlaceholder
 	}
 

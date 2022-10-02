@@ -9,9 +9,9 @@ should be the exact names given below, case-sensitive:
 apiVersion: v1
 data:
   VAULT_ADDR: Zm9v
-  AVP_AUTH_TYPE: Zm9v
-  AVP_GITHUB_TOKEN: Zm9v
-  AVP_TYPE: Zm9v
+  ATP_AUTH_TYPE: Zm9v
+  ATP_GITHUB_TOKEN: Zm9v
+  ATP_TYPE: Zm9v
 kind: Secret
 metadata:
   name: vault-configuration
@@ -27,13 +27,13 @@ By default, the secret is assumed to be in the `argocd` namespace. However, the 
 
 ###### ArgoCD 2.4.0 Environment Variable Prefix
 
-Starting with ArgoCD 2.4.0, environment variables passed into the `init` and `generate` steps are prefixed with `ARGOCD_ENV` to prevent users from setting potentially-sensitive environment variables. All environment variables defined here will be prepended with the new prefix, e.g. `ARGOCD_ENV_AVP_TYPE`. The configuration will honor both prefixed and non-prefixed environment variables, preferring the prefixed variable if both are presented. There are no changes needed to the secret.
+Starting with ArgoCD 2.4.0, environment variables passed into the `init` and `generate` steps are prefixed with `ARGOCD_ENV` to prevent users from setting potentially-sensitive environment variables. All environment variables defined here will be prepended with the new prefix, e.g. `ARGOCD_ENV_ATP_TYPE`. The configuration will honor both prefixed and non-prefixed environment variables, preferring the prefixed variable if both are presented. There are no changes needed to the secret.
 
 ```yaml
 apiVersion: v1
 stringData:
-  # Will be renamed to ARGOCD_ENV_AVP_AUTH_TYPE by ArgoCD before reaching the plugin.
-  AVP_AUTH_TYPE: vault
+  # Will be renamed to ARGOCD_ENV_ATP_AUTH_TYPE by ArgoCD before reaching the plugin.
+  ATP_AUTH_TYPE: vault
 kind: Secret
 metadata:
   name: vault-configuration
@@ -48,19 +48,19 @@ The configuration can be given in a file reachable from the plugin, in any Viper
 
 ```yaml
 VAULT_ADDR: http://vault
-AVP_AUTH_TYPE: github
-AVP_GITHUB_TOKEN: t0ke3n
-AVP_TYPE: vault
+ATP_AUTH_TYPE: github
+ATP_GITHUB_TOKEN: t0ke3n
+ATP_TYPE: vault
 ```
 
 You can use it like this: `argocd-terraform-plugin generate /some/path -c /path/to/config/file.yaml`. This can be useful for use-cases not involving Argo CD.
 
 ##### Environment Variables
 
-The configuration can be set via environment variables, where each key is prefixed by `AVP_`:
+The configuration can be set via environment variables, where each key is prefixed by `ATP_`:
 
 ```shell
-AVP_TYPE=vault # corresponds to TYPE key
+ATP_TYPE=vault # corresponds to TYPE key
 ```
 
 Make sure that these environment variables are available to the plugin when running it, whether that is in Argo CD or as a CLI tool. Note that any _set_
@@ -69,26 +69,26 @@ environment variables take precedence over configuration pulled from a Kubernete
 ### Full List of Supported Parameters
 We support all the backend specific environment variables each backend's SDK will accept (e.g, `VAULT_NAMESPACE`, `AWS_REGION`, etc). Refer to the [specific backend's documentation](../backends) for details.
 
-We also support these AVP specific variables:
+We also support these ATP specific variables:
 
 | Name                       | Description                                         | Notes                                                                                                                                                                        |
 | -------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AVP_TYPE                   | The type of Vault backend                           | Supported values: `vault`, `ibmsecretsmanager`, `awssecretsmanager`, `gcpsecretmanager`, `yandexcloudlockbox` and `1passwordconnect`                                         |
-| AVP_KV_VERSION             | The vault secret engine                             | Supported values: `1` and `2` (defaults to 2). KV_VERSION will be ignored if the `avp.kubernetes.io/kv-version` annotation is present in a YAML resource.                    |
-| AVP_AUTH_TYPE              | The type of authentication                          | Supported values: vault: `approle, github, k8s, token`. Only honored for `AVP_TYPE` of `vault`                                                                               |
-| AVP_GITHUB_TOKEN           | Github token                                        | Required with `AUTH_TYPE` of `github`                                                                                                                                        |
-| AVP_ROLE_ID                | Vault AppRole Role_ID                               | Required with `AUTH_TYPE` of `approle`                                                                                                                                       |
-| AVP_SECRET_ID              | Vault AppRole Secret_ID                             | Required with `AUTH_TYPE` of `approle`                                                                                                                                       |
-| AVP_MOUNT_PATH             | Vault Auth Mount PATH                               | Optional. Defaults to the appropriate path based on `AUTH_TYPE` (i.e, `auth/approle` for AppRole authentication, `auth/github` for Github, `auth/kubernetes` for Kubernetes) |
-| AVP_K8S_MOUNT_PATH         | Kuberentes Auth Mount PATH                          | Optional for `AUTH_TYPE` of `k8s` defaults to `auth/kubernetes`. Takes precedence over `$AVP_MOUNT_PATH`                                                                     |
-| AVP_K8S_ROLE               | Kuberentes Auth Role                                | Required with `AUTH_TYPE` of `k8s`                                                                                                                                           |
-| AVP_K8S_TOKEN_PATH         | Path to JWT for Kubernetes Auth                     | Optional for `AUTH_TYPE` of `k8s` defaults to `/var/run/secrets/kubernetes.io/serviceaccount/token`                                                                          |
-| AVP_IBM_API_KEY            | IBM Cloud IAM API Key                               | Required with `TYPE` of `ibmsecretsmanager`                                                                                                                                  |
-| AVP_IBM_INSTANCE_URL       | Endpoint URL for IBM Cloud Secrets Manager instance | If absent, fall back to `$VAULT_ADDR`                                                                                                                                        |
+| ATP_TYPE                   | The type of Vault backend                           | Supported values: `vault`, `ibmsecretsmanager`, `awssecretsmanager`, `gcpsecretmanager`, `yandexcloudlockbox` and `1passwordconnect`                                         |
+| ATP_KV_VERSION             | The vault secret engine                             | Supported values: `1` and `2` (defaults to 2). KV_VERSION will be ignored if the `avp.kubernetes.io/kv-version` annotation is present in a YAML resource.                    |
+| ATP_AUTH_TYPE              | The type of authentication                          | Supported values: vault: `approle, github, k8s, token`. Only honored for `ATP_TYPE` of `vault`                                                                               |
+| ATP_GITHUB_TOKEN           | Github token                                        | Required with `AUTH_TYPE` of `github`                                                                                                                                        |
+| ATP_ROLE_ID                | Vault AppRole Role_ID                               | Required with `AUTH_TYPE` of `approle`                                                                                                                                       |
+| ATP_SECRET_ID              | Vault AppRole Secret_ID                             | Required with `AUTH_TYPE` of `approle`                                                                                                                                       |
+| ATP_MOUNT_PATH             | Vault Auth Mount PATH                               | Optional. Defaults to the appropriate path based on `AUTH_TYPE` (i.e, `auth/approle` for AppRole authentication, `auth/github` for Github, `auth/kubernetes` for Kubernetes) |
+| ATP_K8S_MOUNT_PATH         | Kuberentes Auth Mount PATH                          | Optional for `AUTH_TYPE` of `k8s` defaults to `auth/kubernetes`. Takes precedence over `$ATP_MOUNT_PATH`                                                                     |
+| ATP_K8S_ROLE               | Kuberentes Auth Role                                | Required with `AUTH_TYPE` of `k8s`                                                                                                                                           |
+| ATP_K8S_TOKEN_PATH         | Path to JWT for Kubernetes Auth                     | Optional for `AUTH_TYPE` of `k8s` defaults to `/var/run/secrets/kubernetes.io/serviceaccount/token`                                                                          |
+| ATP_IBM_API_KEY            | IBM Cloud IAM API Key                               | Required with `TYPE` of `ibmsecretsmanager`                                                                                                                                  |
+| ATP_IBM_INSTANCE_URL       | Endpoint URL for IBM Cloud Secrets Manager instance | If absent, fall back to `$VAULT_ADDR`                                                                                                                                        |
 | AWS_REGION                 | AWS Secrets Manager Region                          | Only valid with `TYPE` `awssecretsmanager`                                                                                                                                   |
-| AVP_YCL_SERVICE_ACCOUNT_ID | Yandex Cloud Lockbox service account ID             | Required with `TYPE` of `yandexcloudlockbox`                                                                                                                                 |
-| AVP_YCL_KEY_ID             | Yandex Cloud Lockbox service account Key ID         | Required with `TYPE` of `yandexcloudlockbox`                                                                                                                                 |
-| AVP_YCL_PRIVATE_KEY        | Yandex Cloud Lockbox service account private key    | Required with `TYPE` of `yandexcloudlockbox`                                                                                                                                 |
+| ATP_YCL_SERVICE_ACCOUNT_ID | Yandex Cloud Lockbox service account ID             | Required with `TYPE` of `yandexcloudlockbox`                                                                                                                                 |
+| ATP_YCL_KEY_ID             | Yandex Cloud Lockbox service account Key ID         | Required with `TYPE` of `yandexcloudlockbox`                                                                                                                                 |
+| ATP_YCL_PRIVATE_KEY        | Yandex Cloud Lockbox service account private key    | Required with `TYPE` of `yandexcloudlockbox`                                                                                                                                 |
 
 ### Full List of Supported Annotation
 
@@ -106,13 +106,13 @@ We support several different annotations that can be used inside a kubernetes re
 
 A common use-case is to be able to use _multiple_ secret backends for generating secrets within different Argo CD applications, such as when a team hosts a multi-tenant Argo CD instance.
 
-For this to work, AVP must be configured to use specific credentials for generating the manifests of an app. This can be done in one of 2 ways:
+For this to work, ATP must be configured to use specific credentials for generating the manifests of an app. This can be done in one of 2 ways:
 
-#### Using Kubernetes secrets for supplying AVP configuration
+#### Using Kubernetes secrets for supplying ATP configuration
 
-This method requires having one Kubernetes secret with AVP configuration for each backend. For example, if there are 2 teams `foo` and `bar` using different instances of AWS Secret Manager, there should be at least 2 Kubernetes secrets containing AVP configuration: `foo-team-aws-sm-credentials` and `bar-team-aws-sm-credentials`.
+This method requires having one Kubernetes secret with ATP configuration for each backend. For example, if there are 2 teams `foo` and `bar` using different instances of AWS Secret Manager, there should be at least 2 Kubernetes secrets containing ATP configuration: `foo-team-aws-sm-credentials` and `bar-team-aws-sm-credentials`.
 
-Then, AVP can be registered as a config management plugin in `argocd-cm` like this:
+Then, ATP can be registered as a config management plugin in `argocd-cm` like this:
 
 ```yaml
 apiVersion: v1
@@ -124,10 +124,10 @@ data:
     - name: aws-avp
       generate:
         command: ["sh", "-c"]
-        args: ["argocd-terraform-plugin generate -s ${AVP_SECRET} ./"]
+        args: ["argocd-terraform-plugin generate -s ${ATP_SECRET} ./"]
 ```
 
-Notice that the secret name is parametrized via an environment variable. This means each Argo app manifest can set `AVP_SECRET` to be the name of the Kubernetes secret that contains the configuration for the backend needed to generate its secrets.
+Notice that the secret name is parametrized via an environment variable. This means each Argo app manifest can set `ATP_SECRET` to be the name of the Kubernetes secret that contains the configuration for the backend needed to generate its secrets.
 
 With the above setup, team `foo` can then deploy an Argo app like this:
 
@@ -148,11 +148,11 @@ spec:
     plugin:
       name: aws-avp
       env:
-        - name: AVP_SECRET
+        - name: ATP_SECRET
           value: foo-team-aws-sm-credentials
 ```
 
-The above is just one approach. If there is a select number of different backends, registering AVP in multiple config management plugins, each using the appropriate backend, is also a valid solution. The `argocd-cm` configuration would look like this:
+The above is just one approach. If there is a select number of different backends, registering ATP in multiple config management plugins, each using the appropriate backend, is also a valid solution. The `argocd-cm` configuration would look like this:
 
 ```yaml
 apiVersion: v1
@@ -193,9 +193,9 @@ spec:
       name: foo-aws-avp
 ```
 
-#### Passing AVP configuration as environment variables in the app manifest
+#### Passing ATP configuration as environment variables in the app manifest
 
-This method simply requires passing the appropriate AVP configuration environment variables in the Argo CD app manifest. This is best used when non-sensitive data, like the Vault namespace, is the only thing that varies between tenants (and therefore, Vault configuration variables like `AVP_ROLE_ID` and `AVP_SECRET_ID` can be specified once via environment variables in the `argocd-repo-server` pod, Kubernetes secrets, etc and not put directly in the app manifest).
+This method simply requires passing the appropriate ATP configuration environment variables in the Argo CD app manifest. This is best used when non-sensitive data, like the Vault namespace, is the only thing that varies between tenants (and therefore, Vault configuration variables like `ATP_ROLE_ID` and `ATP_SECRET_ID` can be specified once via environment variables in the `argocd-repo-server` pod, Kubernetes secrets, etc and not put directly in the app manifest).
 
 For example, if there are 2 teams `foo` and `bar` that use the same Vault but different namespaces, the only configuration that needs to be specified per manifest is the `VAULT_NAMESPACE`.
 
@@ -237,4 +237,4 @@ spec:
           value: foo-team-namespace
 ```
 
-**Note**: Exposing tokens (like `AVP_ROLE_ID` or `AVP_SECRET_ID`) in plain-text in Argo CD app manifests should be avoided. Prefer to pass those tokens through one of the means mentioned above.
+**Note**: Exposing tokens (like `ATP_ROLE_ID` or `ATP_SECRET_ID`) in plain-text in Argo CD app manifests should be avoided. Prefer to pass those tokens through one of the means mentioned above.

@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/helpers"
-	"github.com/argoproj-labs/argocd-vault-plugin/pkg/types"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/helpers"
+	"github.com/KazanExpress/argocd-terraform-plugin/pkg/types"
 )
 
 func assertSuccessfulReplacement(actual, expected *Resource, t *testing.T) {
@@ -48,7 +48,7 @@ func TestGenericReplacement_simpleString(t *testing.T) {
 			"namespace": "default",
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -86,7 +86,7 @@ func TestGenericReplacement_specificPath(t *testing.T) {
 		},
 		Backend: &mv,
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -134,7 +134,7 @@ func TestGenericReplacement_specificPathVersioned(t *testing.T) {
 		Data:    map[string]interface{}{},
 		Backend: &mv,
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -210,7 +210,7 @@ func TestGenericReplacement_multiString(t *testing.T) {
 			"tag":       "latest",
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -244,7 +244,7 @@ func TestGenericReplacement_Base64(t *testing.T) {
 			"tag":       "latest",
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -286,7 +286,7 @@ func TestGenericReplacement_JsonPath(t *testing.T) {
 			},
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -328,7 +328,7 @@ func TestGenericReplacement_Modifier_Error(t *testing.T) {
 			"data": map[string]interface{}{},
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -358,7 +358,7 @@ func TestGenericReplacement_Modifier_Undefined(t *testing.T) {
 			"data": map[string]interface{}{},
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -394,7 +394,7 @@ func TestGenericReplacement_nestedString(t *testing.T) {
 			"name":      "foo",
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -432,7 +432,7 @@ func TestGenericReplacement_int(t *testing.T) {
 			"replicas":  1,
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -467,7 +467,7 @@ func TestGenericReplacement_missingValue(t *testing.T) {
 			"namespace": "default",
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -505,7 +505,7 @@ func TestSecretReplacement(t *testing.T) {
 			"tag":       "latest",
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -539,7 +539,7 @@ func TestSecretReplacement_Base64(t *testing.T) {
 			"tag":       "latest",
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
@@ -573,7 +573,7 @@ func TestSecretReplacement_Base64Substrings(t *testing.T) {
 			"secret_access_key_id": "testsecret",
 		},
 		Annotations: map[string]string{
-			(types.AVPPathAnnotation): "",
+			(types.ATPPathAnnotation): "",
 		},
 	}
 
