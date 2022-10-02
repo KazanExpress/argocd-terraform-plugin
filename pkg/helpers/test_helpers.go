@@ -3,7 +3,6 @@ package helpers
 import (
 	"fmt"
 	"net"
-	"strconv"
 	"testing"
 
 	"github.com/hashicorp/go-hclog"
@@ -507,39 +506,31 @@ func CreateTestUserPassVault(t *testing.T) (*vault.TestCluster, string, string) 
 	return cluster, authUserPassUsername, authUserPassPassword
 }
 
-// MockVault is used to mock out a generic SM Backend
+// MockStateBackend is used to mock out a generic SM Backend
 // It's useful for testing replacement behavior
-type MockVault struct {
+type MockStateBackend struct {
 	GetSecretsCalled          bool
 	GetIndividualSecretCalled bool
-	Data                      []map[string]interface{}
+	Data                      map[string]interface{}
 }
 
-func (v *MockVault) Login() error {
+func (v *MockStateBackend) Login() error {
 	return nil
 }
-func (v *MockVault) LoadData(data map[string]interface{}) {
-	v.Data = append(v.Data, data)
+func (v *MockStateBackend) LoadData(data map[string]interface{}) {
+	v.Data = data
 }
-func (v *MockVault) GetSecrets(path string, version string, annotations map[string]string) (map[string]interface{}, error) {
+func (v *MockStateBackend) GetSecrets(path string, annotations map[string]string) (map[string]interface{}, error) {
 	v.GetSecretsCalled = true
 	if len(v.Data) == 0 {
 		return make(map[string]interface{}), nil
 	}
-	if version == "" {
-		return v.Data[len(v.Data)-1], nil
-	}
-	num, _ := strconv.ParseInt(version, 10, 0)
-	return v.Data[num-1], nil
+	return v.Data, nil
 }
-func (v *MockVault) GetIndividualSecret(path, secret, version string, annotations map[string]string) (interface{}, error) {
+func (v *MockStateBackend) GetIndividualSecret(path, secret string, annotations map[string]string) (interface{}, error) {
 	v.GetIndividualSecretCalled = true
 	if len(v.Data) == 0 {
 		return nil, nil
 	}
-	if version == "" {
-		return v.Data[len(v.Data)-1][secret], nil
-	}
-	num, _ := strconv.ParseInt(version, 10, 0)
-	return v.Data[num-1][secret], nil
+	return v.Data[secret], nil
 }

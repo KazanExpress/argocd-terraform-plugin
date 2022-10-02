@@ -17,8 +17,8 @@ type MinioClient interface {
 	GetObject(ctx context.Context, bucket, path string, opt minio.GetObjectOptions) (io.Reader, error)
 }
 
-// TerraformState is a struct for working with a Terraform State backend
-type TerraformState struct {
+// S3Backend is a struct for working with a Terraform State backend
+type S3Backend struct {
 	client MinioClient
 	bucket string
 }
@@ -45,28 +45,24 @@ func WrapMinioClient(c *minio.Client) MinioClient {
 }
 
 // NewS3Backend initializes a new Terraform S3 State backend
-func NewS3Backend(client MinioClient, bucket string) *TerraformState {
-	return &TerraformState{
+func NewS3Backend(client MinioClient, bucket string) *S3Backend {
+	return &S3Backend{
 		client: client,
 		bucket: bucket,
 	}
 }
 
 // Login does nothing as a "login" is handled on the instantiation of the minio client
-func (ycl *TerraformState) Login() error {
+func (ycl *S3Backend) Login() error {
 	return nil
 }
 
 // GetSecrets gets secrets from terraform state backend and returns the formatted data
-func (ycl *TerraformState) GetSecrets(path string, version string, _ map[string]string) (map[string]interface{}, error) {
+func (ycl *S3Backend) GetSecrets(path string, _ map[string]string) (map[string]interface{}, error) {
 
 	var options = minio.GetObjectOptions{}
 
-	if version != "" {
-		options.VersionID = version
-	}
-
-	utils.VerboseToStdErr("Terraform S3 State getting object %s at version %s", path, version)
+	utils.VerboseToStdErr("Terraform S3 State getting object %s", path)
 	obj, err := ycl.client.GetObject(context.Background(), ycl.bucket, path, options)
 	if err != nil {
 		return nil, fmt.Errorf("mc get object: %w", err)
@@ -96,8 +92,8 @@ func (ycl *TerraformState) GetSecrets(path string, version string, _ map[string]
 }
 
 // GetIndividualSecret will get the specific secret (placeholder) from the terraform state backend
-func (ycl *TerraformState) GetIndividualSecret(path, key, version string, _ map[string]string) (interface{}, error) {
-	secrets, err := ycl.GetSecrets(path, version, nil)
+func (ycl *S3Backend) GetIndividualSecret(path, key string, _ map[string]string) (interface{}, error) {
+	secrets, err := ycl.GetSecrets(path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +102,7 @@ func (ycl *TerraformState) GetIndividualSecret(path, key, version string, _ map[
 	if !found {
 		utils.VerboseToStdErr("Terraform S3 State existing secrets: %v", secrets)
 
-		return nil, fmt.Errorf("path: %s, key: %s, version: %s not found", path, key, version)
+		return nil, fmt.Errorf("path: %s, key: %s not found", path, key)
 	}
 
 	return secret, nil

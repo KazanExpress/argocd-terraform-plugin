@@ -7,8 +7,8 @@ import (
 // NewRootCommand returns a new instance of the root command
 func NewRootCommand() *cobra.Command {
 	var command = &cobra.Command{
-		Use:   "argocd-vault-plugin",
-		Short: "This is a plugin to replace <placeholders> with Vault secrets",
+		Use:   "argocd-terraform-plugin",
+		Short: "This is a plugin to replace <placeholders> with terraform outputs",
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.HelpFunc()(cmd, args)
 		},

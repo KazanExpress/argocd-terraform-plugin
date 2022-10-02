@@ -2,8 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    avp.kubernetes.io/path: secret/testing
-    avp.kubernetes.io/kv-version: "1"
+    atp.kubernetes.io/path: secret/testing
+
   name: <name>
   namespace: <namespace>
   labels:

@@ -27,6 +27,7 @@ type Config struct {
 	Backend types.Backend
 }
 
+// todo: remote it
 var backendPrefixes []string = []string{
 	"vault",
 	"aws",
@@ -38,9 +39,8 @@ var backendPrefixes []string = []string{
 
 // New returns a new Config struct
 func New(v *viper.Viper, co *Options) (*Config, error) {
-	// Set Defaults
-	v.SetDefault(types.EnvAvpKvVersion, "2")
 
+	v.SetDefault(types.EnvAtpBackend, types.S3Backend)
 	// Read in config file or kubernetes secret and set as env vars
 	err := readConfigOrSecret(co.SecretName, co.ConfigPath, v)
 	if err != nil {
@@ -56,43 +56,40 @@ func New(v *viper.Viper, co *Options) (*Config, error) {
 		utils.VerboseToStdErr("%s: %s\n", k, viperValue)
 	}
 
-	authType := v.GetString(types.EnvAvpAuthType)
-
-	var auth types.AuthType
 	var backend types.Backend
 
-	switch v.GetString(types.EnvAvpType) {
-	case types.TerraformStateBackend:
+	switch v.GetString(types.EnvAtpBackend) {
+	case types.S3Backend:
 		{
-			if !v.IsSet(types.EnvAvpTFS3AccessKey) ||
-				!v.IsSet(types.EnvAvpTFS3Bucket) ||
-				!v.IsSet(types.EnvAvpTFS3Endpoint) ||
-				!v.IsSet(types.EnvAvpTFS3SecretKey) {
+			if !v.IsSet(types.EnvAtpS3AccessKey) ||
+				!v.IsSet(types.EnvAtpS3Bucket) ||
+				!v.IsSet(types.EnvAtpS3Endpoint) ||
+				!v.IsSet(types.EnvAtpS3SecretKey) {
 				return nil, fmt.Errorf(
 					"%s, %s, %s and %s are required for terraform state backend",
-					types.EnvAvpTFS3AccessKey,
-					types.EnvAvpTFS3Bucket,
-					types.EnvAvpTFS3Endpoint,
-					types.EnvAvpTFS3SecretKey,
+					types.EnvAtpS3AccessKey,
+					types.EnvAtpS3Bucket,
+					types.EnvAtpS3Endpoint,
+					types.EnvAtpS3SecretKey,
 				)
 			}
 
-			client, err := minio.New(v.GetString(types.EnvAvpTFS3Endpoint), &minio.Options{
+			client, err := minio.New(v.GetString(types.EnvAtpS3Endpoint), &minio.Options{
 				Creds: credentials.NewStaticV4(
-					v.GetString(types.EnvAvpTFS3AccessKey),
-					v.GetString(types.EnvAvpTFS3SecretKey),
+					v.GetString(types.EnvAtpS3AccessKey),
+					v.GetString(types.EnvAtpS3SecretKey),
 					""),
-				Secure: v.GetBool(types.EnvAvpTFS3UseSSL),
+				Secure: v.GetBool(types.EnvAtpS3UseSSL),
 			})
 
 			if err != nil {
 				return nil, fmt.Errorf("failed to create minio client: %w", err)
 			}
 
-			backend = backends.NewS3Backend(backends.WrapMinioClient(client), v.GetString(types.EnvAvpTFS3Bucket))
+			backend = backends.NewS3Backend(backends.WrapMinioClient(client), v.GetString(types.EnvAtpS3Bucket))
 		}
 	default:
-		return nil, fmt.Errorf("Must provide a supported Vault Type, received %s", v.GetString(types.EnvAvpType))
+		return nil, fmt.Errorf("Must provide a supported Vault Type, received %s", v.GetString(types.EnvAtpBackend))
 	}
 
 	return &Config{

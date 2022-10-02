@@ -147,7 +147,7 @@ kind: ConfigMap
 metadata:
   name: cmp-plugin
 data:
-  avp.yaml: |
+  atp.yaml: |
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
@@ -217,7 +217,7 @@ spec:
 
           # Register plugins into sidecar
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-            subPath: avp.yaml
+            subPath: atp.yaml
             name: cmp-plugin
 
           # Important: Mount tools into $PATH
@@ -234,7 +234,7 @@ kind: ConfigMap
 metadata:
   name: cmp-plugin
 data:
-  avp.yaml: |
+  atp.yaml: |
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
@@ -315,7 +315,7 @@ spec:
 
           # Register plugins into sidecar
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-            subPath: avp.yaml
+            subPath: atp.yaml
             name: cmp-plugin
 ```
 

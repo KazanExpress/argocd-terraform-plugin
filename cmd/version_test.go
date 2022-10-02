@@ -27,7 +27,7 @@ func TestVersion(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expected := "argocd-vault-plugin v0.0.1 (AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA) BuildDate: 1970-01-01T:00:00:00Z"
+		expected := "argocd-terraform-plugin v0.0.1 (AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA) BuildDate: 1970-01-01T:00:00:00Z"
 		if !strings.Contains(string(out), expected) {
 			t.Fatalf("expected to contain: %s but got %s", expected, out)
 		}

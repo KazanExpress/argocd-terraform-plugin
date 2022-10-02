@@ -2,8 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    avp.kubernetes.io/path: secret/json
-    avp.kubernetes.io/kv-version: "1"
+    atp.kubernetes.io/path: secret/json
+
   name: modifiers-test
   namespace: modifiers-test
 spec:
@@ -32,8 +32,8 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    avp.kubernetes.io/path: secret/json
-    avp.kubernetes.io/kv-version: "1"
+    atp.kubernetes.io/path: secret/json
+
   name: modifiers-test
   namespace: modifiers-test
   labels:
@@ -60,7 +60,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   annotations:
-    avp.kubernetes.io/kv-version: "1"
+
   name: modifiers-test
   namespace: modifiers-test
 type: Opaque

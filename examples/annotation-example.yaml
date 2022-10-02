@@ -1,13 +1,13 @@
-# Using avp.kubernetes.io/path  Annotation
-# We are setting avp.kubernetes.io/path  to tell the plugin exactly where to find data
+# Using atp.kubernetes.io/path  Annotation
+# We are setting atp.kubernetes.io/path  to tell the plugin exactly where to find data
 # https://argocd-terraform-plugin.readthedocs.io/en/stable/howitworks/#generic-placeholders
 kind: Secret
 apiVersion: v1
 metadata:
   name: example-annotation
   annotations:
-    avp.kubernetes.io/path: "secret/data/database"
+    atp.kubernetes.io/path: "env/test1/terraform.tfstate"
 type: Opaque
 data:
-  username: <username>
+  username: <terraform:string_value>
   password: <password>

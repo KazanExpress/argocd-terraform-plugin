@@ -23,7 +23,7 @@ func NewGenerateCommand() *cobra.Command {
 
 	var command = &cobra.Command{
 		Use:   "generate <path>",
-		Short: "Generate manifests from templates with Vault values",
+		Short: "Generate manifests from templates with terraform output values",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return fmt.Errorf("<path> argument required to generate manifests")
@@ -105,8 +105,8 @@ func NewGenerateCommand() *cobra.Command {
 		},
 	}
 
-	command.Flags().StringVarP(&configPath, "config-path", "c", "", "path to a file containing Vault configuration (YAML, JSON, envfile) to use")
-	command.Flags().StringVarP(&secretName, "secret-name", "s", "", "name of a Kubernetes Secret in the argocd namespace containing Vault configuration data in the argocd namespace of your ArgoCD host (Only available when used in ArgoCD). The namespace can be overridden by using the format <namespace>:<name>")
+	command.Flags().StringVarP(&configPath, "config-path", "c", "", "path to a file containing terraform configuration (YAML, JSON, envfile) to use")
+	command.Flags().StringVarP(&secretName, "secret-name", "s", "", "name of a Kubernetes Secret in the argocd namespace containing configuration data in the argocd namespace of your ArgoCD host (Only available when used in ArgoCD). The namespace can be overridden by using the format <namespace>:<name>")
 	command.Flags().BoolVar(&verboseOutput, "verbose-sensitive-output", false, "enable verbose mode for detailed info to help with debugging. Includes sensitive data (credentials), logged to stderr")
 	return command
 }

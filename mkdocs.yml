@@ -25,7 +25,7 @@ nav:
   - Backends: backends.md
   - Configuration: config.md
   - CLI Reference:
-    - argocd-terraform-plugin: cmd/avp.md
+    - argocd-terraform-plugin: cmd/atp.md
     - argocd-terraform-plugin generate: cmd/generate.md
     - argocd-terraform-plugin version: cmd/version.md
   - Upgrading:

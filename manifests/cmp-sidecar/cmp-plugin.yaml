@@ -52,7 +52,7 @@ data:
             helm template $ARGOCD_APP_NAME -n $ARGOCD_APP_NAMESPACE ${ARGOCD_ENV_HELM_ARGS} . |
             argocd-terraform-plugin generate -
       lockRepo: false
-  avp.yaml: |
+  atp.yaml: |
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:

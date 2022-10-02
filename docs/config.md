@@ -2,16 +2,16 @@ There are 3 different ways that parameters can be passed along to argocd-terrafo
 
 ##### Kubernetes Secret
 
-You can define a Secret with the Vault configuration. The keys of the secret's `data`/`stringData`
+You can define a Secret with the Terraform configuration. The keys of the secret's `data`/`stringData`
 should be the exact names given below, case-sensitive:
 
 ```yaml
 apiVersion: v1
 data:
-  VAULT_ADDR: Zm9v
-  ATP_AUTH_TYPE: Zm9v
-  ATP_GITHUB_TOKEN: Zm9v
-  ATP_TYPE: Zm9v
+  ATP_S3_SECRET_KEY: Zm9v
+  ATP_S3_ACCESS_KEY: Zm9v
+  ATP_S3_ENDPOINT: Zm9v
+  ATP_BACKEND: Zm9v
 kind: Secret
 metadata:
   name: vault-configuration
@@ -27,7 +27,7 @@ By default, the secret is assumed to be in the `argocd` namespace. However, the 
 
 ###### ArgoCD 2.4.0 Environment Variable Prefix
 
-Starting with ArgoCD 2.4.0, environment variables passed into the `init` and `generate` steps are prefixed with `ARGOCD_ENV` to prevent users from setting potentially-sensitive environment variables. All environment variables defined here will be prepended with the new prefix, e.g. `ARGOCD_ENV_ATP_TYPE`. The configuration will honor both prefixed and non-prefixed environment variables, preferring the prefixed variable if both are presented. There are no changes needed to the secret.
+Starting with ArgoCD 2.4.0, environment variables passed into the `init` and `generate` steps are prefixed with `ARGOCD_ENV` to prevent users from setting potentially-sensitive environment variables. All environment variables defined here will be prepended with the new prefix, e.g. `ARGOCD_ENV_ATP_BACKEND`. The configuration will honor both prefixed and non-prefixed environment variables, preferring the prefixed variable if both are presented. There are no changes needed to the secret.
 
 ```yaml
 apiVersion: v1
@@ -50,7 +50,7 @@ The configuration can be given in a file reachable from the plugin, in any Viper
 VAULT_ADDR: http://vault
 ATP_AUTH_TYPE: github
 ATP_GITHUB_TOKEN: t0ke3n
-ATP_TYPE: vault
+ATP_BACKEND: vault
 ```
 
 You can use it like this: `argocd-terraform-plugin generate /some/path -c /path/to/config/file.yaml`. This can be useful for use-cases not involving Argo CD.
@@ -60,7 +60,7 @@ You can use it like this: `argocd-terraform-plugin generate /some/path -c /path/
 The configuration can be set via environment variables, where each key is prefixed by `ATP_`:
 
 ```shell
-ATP_TYPE=vault # corresponds to TYPE key
+ATP_BACKEND=vault # corresponds to TYPE key
 ```
 
 Make sure that these environment variables are available to the plugin when running it, whether that is in Argo CD or as a CLI tool. Note that any _set_
@@ -73,9 +73,9 @@ We also support these ATP specific variables:
 
 | Name                       | Description                                         | Notes                                                                                                                                                                        |
 | -------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ATP_TYPE                   | The type of Vault backend                           | Supported values: `vault`, `ibmsecretsmanager`, `awssecretsmanager`, `gcpsecretmanager`, `yandexcloudlockbox` and `1passwordconnect`                                         |
-| ATP_KV_VERSION             | The vault secret engine                             | Supported values: `1` and `2` (defaults to 2). KV_VERSION will be ignored if the `avp.kubernetes.io/kv-version` annotation is present in a YAML resource.                    |
-| ATP_AUTH_TYPE              | The type of authentication                          | Supported values: vault: `approle, github, k8s, token`. Only honored for `ATP_TYPE` of `vault`                                                                               |
+| ATP_BACKEND                   | The type of Vault backend                           | Supported values: `vault`, `ibmsecretsmanager`, `awssecretsmanager`, `gcpsecretmanager`, `yandexcloudlockbox` and `1passwordconnect`                                         |
+| ATP_KV_VERSION             | The vault secret engine                             | Supported values: `1` and `2` (defaults to 2). KV_VERSION will be ignored if the `atp.kubernetes.io/kv-version` annotation is present in a YAML resource.                    |
+| ATP_AUTH_TYPE              | The type of authentication                          | Supported values: vault: `approle, github, k8s, token`. Only honored for `ATP_BACKEND` of `vault`                                                                               |
 | ATP_GITHUB_TOKEN           | Github token                                        | Required with `AUTH_TYPE` of `github`                                                                                                                                        |
 | ATP_ROLE_ID                | Vault AppRole Role_ID                               | Required with `AUTH_TYPE` of `approle`                                                                                                                                       |
 | ATP_SECRET_ID              | Vault AppRole Secret_ID                             | Required with `AUTH_TYPE` of `approle`                                                                                                                                       |
@@ -96,11 +96,9 @@ We support several different annotations that can be used inside a kubernetes re
 
 | Annotation                       | Description                                                                                                                                        |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| avp.kubernetes.io/path           | Path to the Vault Secret                                                                                                                           |
-| avp.kubernetes.io/ignore         | Boolean to tell the plugin whether or not to process the file. Invalid values translate to `false`                                                 |
-| avp.kubernetes.io/kv-version     | Version of the KV Secret Engine                                                                                                                    |
-| avp.kubernetes.io/secret-version | Version of the secret to retrieve. Only effective on generic `<placeholder>`s so `avp.kubernetes.io/path` is required when this annotation is used |
-| avp.kubernetes.io/remove-missing | Plugin will not throw error when a key is missing from Vault Secret. Only works on `Secret` or `ConfigMap` resources                               |
+| atp.kubernetes.io/path           | Path to the Vault Secret                                                                                                                           |
+| atp.kubernetes.io/ignore         | Boolean to tell the plugin whether or not to process the file. Invalid values translate to `false`                                                 |
+| atp.kubernetes.io/remove-missing | Plugin will not throw error when a key is missing from Vault Secret. Only works on `Secret` or `ConfigMap` resources                               |
 
 ### Multitenancy
 

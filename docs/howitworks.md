@@ -1,10 +1,10 @@
 ### Summary
 
-The argocd-terraform-plugin works by taking a directory of YAML or JSON files that have been templated out using the pattern of `<placeholder>` where you would want a value from Vault to go. The inside of the `<>` would be the actual key in Vault.
+The argocd-terraform-plugin works by taking a directory of YAML or JSON files that have been templated out using the pattern of `<terraform:placeholder>` where you would want a value from terraform output to go. The `placeholder` would be the actual key in terraform output.
 
-An annotation can be used to specify exactly where the plugin should look for the vault values. The annotation needs to be in the format `avp.kubernetes.io/path: "path/to/secret"`.
+An annotation can be used to specify exactly where the plugin should look for the terraform state values. The annotation needs to be in the format `atp.kubernetes.io/path: "path/to/state"`.
 
-For example, if you have a secret with the key `password-vault-key` that you would want to pull from vault, you might have a yaml that looks something like the below code. In this yaml, the plugin will pull the value of the _latest version_ of the secret at `path/to/secret/password-vault-key` and inject it into the Secret.
+For example, if you have a state with the key `password-vault-key` that you would want to pull from vault, you might have a yaml that looks something like the below code. In this yaml, the plugin will pull the value of the _latest version_ of the secret at `path/to/secret/password-vault-key` and inject it into the Secret.
 
 As YAML:
 ```yaml
@@ -13,7 +13,7 @@ apiVersion: v1
 metadata:
   name: example-secret
   annotations:
-    avp.kubernetes.io/path: "path/to/secret"
+    atp.kubernetes.io/path: "path/to/secret"
 type: Opaque
 data:
   password: <password-vault-key>
@@ -27,7 +27,7 @@ As JSON:
   "metadata": {
     "name": "example-secret",
     "annotations": {
-      "avp.kubernetes.io/path": "path/to/secret"
+      "atp.kubernetes.io/path": "path/to/secret"
     }
   },
   "type": "Opaque",
@@ -44,7 +44,7 @@ apiVersion: v1
 metadata:
   name: example-secret
   annotations:
-    avp.kubernetes.io/path: "path/to/secret"
+    atp.kubernetes.io/path: "path/to/secret"
 type: Opaque
 data:
   password: cGFzc3dvcmQK # The Value from the key password-vault-key in vault
@@ -69,27 +69,15 @@ Valid examples:
 - `<placeholder>`
 
 ##### Specifying the path of a secret
-The only way to specify the path of a secret for generic placeholders is to use the `avp.kubernetes.io/path` annotation like this:
+The only way to specify the path of a secret for generic placeholders is to use the `atp.kubernetes.io/path` annotation like this:
 ```yaml
 kind: Secret
 apiVersion: v1
 metadata:
   name: example-secret
   annotations:
-    avp.kubernetes.io/path: "path/to/secret"
+    atp.kubernetes.io/path: "path/to/secret"
 ```
-
-##### Specifying the version of a secret
-The only way to specify the version of a secret for generic placeholders is to use the `avp.kubernetes.io/secret-version` annotation like this:
-```yaml
-kind: Secret
-apiVersion: v1
-metadata:
-  name: example-secret
-  annotations:
-    avp.kubernetes.io/secret-version: "2" # Requires at least 2 revisions to exist to work
-```
-**Note**: This ignored for secret managers that don't allow versioning, meaning the latest version is returned
 
 #### Inline-path placeholders
 An inline-path placeholder allows you to specify the path, key, and optionally, the version to use for a specific placeholder. This means you can inject values from _multiple distinct_ secrets in your secrets manager into the same YAML.
@@ -102,12 +90,7 @@ Valid examples:
 If the `version` is omitted (first example), the latest version of the secret is retrieved.
 
 ##### Specifying the path of a secret
-The only way to specify the path is in the placeholder itself: the string `path:` followed by the path in your secret manager to the secret. The `avp.kubernetes.io/path` annotation has _no effect_ on these placeholders.
-
-##### Specifying the version of a secret
-The only way to specify the version is in the placeholder itself: the string following the last `#` in the placeholder should be the ID of the version of the secret in your secret manager. The `avp.kubernetes.io/secret-version` annotation has _no effect_ on these placeholders.
-
-**Note**: This ignored for secret managers that don't allow versioning, meaning the latest version is returned
+The only way to specify the path is in the placeholder itself: the string `path:` followed by the path in your secret manager to the secret. The `atp.kubernetes.io/path` annotation has _no effect_ on these placeholders.
 
 #### Special behavior
 
@@ -123,7 +106,7 @@ apiVersion: v1
 metadata:
   name: example-secret
   annotations:
-    avp.kubernetes.io/path: "path/to/secret"
+    atp.kubernetes.io/path: "path/to/secret"
 type: Opaque
 data:
   # The base64 encoding of postgres://<username>:<password>@<host>:<port>/<database>?sslmode=require
@@ -146,7 +129,7 @@ apiVersion: v1
 metadata:
   name: example-secret
   annotations:
-    avp.kubernetes.io/path: "path/to/secret"
+    atp.kubernetes.io/path: "path/to/secret"
 type: Opaque
 data:
   # The base64 encoding of postgres://user:pass@host:9443/my-db?sslmode=require
@@ -154,7 +137,7 @@ data:
 ```
 
 ##### Automatically ignoring `<placeholder>` strings
-The plugin tries to be helpful and will ignore strings in the format `<string>` if the `avp.kubernetes.io/path` annotation is missing, and only try to replace [inline-path placeholders](#inline-path-placeholders)
+The plugin tries to be helpful and will ignore strings in the format `<string>` if the `atp.kubernetes.io/path` annotation is missing, and only try to replace [inline-path placeholders](#inline-path-placeholders)
 
 This can be very useful when using ATP with YAML/JSON that uses `<string>`'s for other purposes, for example in CRD's with usage information:
 ```yaml
@@ -163,7 +146,7 @@ apiVersion: v1
 metadata:
   name: some-crd
 
-  # Notice, no `avp.kubernetes.io/path` annotation here
+  # Notice, no `atp.kubernetes.io/path` annotation here
   annotations: {}
 type: Opaque
 fieldRef:
@@ -181,7 +164,7 @@ fieldRef:
 ```
 
 ##### Ignoring entire YAML/JSON files
-The plugin will ignore any given YAML/JSON file outright with the `avp.kubernetes.io/ignore` annotation set to `"true"`:
+The plugin will ignore any given YAML/JSON file outright with the `atp.kubernetes.io/ignore` annotation set to `"true"`:
 
 ```yaml
 kind: CustomResourceDefinition
@@ -189,9 +172,9 @@ apiVersion: v1
 metadata:
   name: some-crd
 
-  # Notice, `avp.kubernetes.io/ignore` annotation is set
+  # Notice, `atp.kubernetes.io/ignore` annotation is set
   annotations:
-    avp.kubernetes.io/ignore: "true"
+    atp.kubernetes.io/ignore: "true"
 type: Opaque
 fieldRef:
 
@@ -213,7 +196,7 @@ fieldRef:
 ##### Removing keys with missing values
 By default, ATP will return an error if there is a `<placeholder>` that has no matching key in the secrets manager.
 
-You can override this by using the annotation `avp.kubernetes.io/remove-missing`. This will remove keys whose values are missing from Vault from the entire YAML.
+You can override this by using the annotation `atp.kubernetes.io/remove-missing`. This will remove keys whose values are missing from Vault from the entire YAML.
 
 For example, given this input:
 ```yaml
@@ -222,7 +205,7 @@ apiVersion: v1
 metadata:
   name: example-secret
   annotations:
-    avp.kubernetes.io/remove-missing: "true"
+    atp.kubernetes.io/remove-missing: "true"
 stringData:
   username: <username>
   password: <pass>
@@ -240,7 +223,7 @@ apiVersion: v1
 metadata:
   name: example-secret
   annotations:
-    avp.kubernetes.io/remove-missing: "true"
+    atp.kubernetes.io/remove-missing: "true"
 stringData:
   username: user
 ```

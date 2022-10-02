@@ -71,7 +71,7 @@ func TestTerraformState(t *testing.T) {
 
 	t.Run("Terraform State GetSecrets()", func(t *testing.T) {
 
-		secrets, err := backend.GetSecrets(path, "", nil)
+		secrets, err := backend.GetSecrets(path, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -94,7 +94,7 @@ func TestTerraformState(t *testing.T) {
 	})
 
 	t.Run("Terraform State GetIndividualSecret()", func(t *testing.T) {
-		realStrVal, err := backend.GetIndividualSecret(path, "test_string", "", nil)
+		realStrVal, err := backend.GetIndividualSecret(path, "test_string", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -102,7 +102,7 @@ func TestTerraformState(t *testing.T) {
 			t.Fatalf("test_string secret expected to be %v but received %v", strVal, realStrVal)
 		}
 
-		realObjVal, err := backend.GetIndividualSecret(path, "test_obj", "", nil)
+		realObjVal, err := backend.GetIndividualSecret(path, "test_obj", nil)
 		if reflect.DeepEqual(realObjVal, objVal) {
 			t.Fatalf("test_obj secret expected to be %v but received %v", objVal, realObjVal)
 		}

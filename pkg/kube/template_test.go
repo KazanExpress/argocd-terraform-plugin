@@ -2,7 +2,6 @@ package kube
 
 import (
 	"io/ioutil"
-	"reflect"
 	"strings"
 	"testing"
 
@@ -34,7 +33,7 @@ func TestToYAML_Missing_Placeholders(t *testing.T) {
 		},
 	}
 
-	expectedErr := "Replace: could not replace all placeholders in Template:\nreplaceString: missing Vault value for placeholder terraform:string in string MY_SECRET_STRING: <terraform:string>"
+	expectedErr := "Replace: could not replace all placeholders in Template:\nreplaceString: missing output value for placeholder string in string MY_SECRET_STRING: <terraform:string>"
 
 	err := d.Replace()
 	if err == nil {
@@ -47,7 +46,7 @@ func TestToYAML_Missing_Placeholders(t *testing.T) {
 }
 
 func TestToYAML_Missing_PlaceholdersSpecificPath(t *testing.T) {
-	mv := helpers.MockVault{}
+	mv := helpers.MockStateBackend{}
 	mv.LoadData(map[string]interface{}{
 		"different-placeholder": "string",
 	})
@@ -64,7 +63,7 @@ func TestToYAML_Missing_PlaceholdersSpecificPath(t *testing.T) {
 					"name":      "some-resource",
 				},
 				"stringData": map[string]interface{}{
-					"MY_SECRET_STRING": "<terraform:path:somewhere#string>",
+					"MY_SECRET_STRING": "<terraform:somewhere#string>",
 				},
 			},
 			Backend: &mv,
@@ -74,7 +73,7 @@ func TestToYAML_Missing_PlaceholdersSpecificPath(t *testing.T) {
 		},
 	}
 
-	expectedErr := "Replace: could not replace all placeholders in Template:\nreplaceString: missing Vault value for placeholder terraform:path:somewhere#string in string MY_SECRET_STRING: <terraform:path:somewhere#string>"
+	expectedErr := "Replace: could not replace all placeholders in Template:\nreplaceString: missing output value for placeholder somewhere#string in string MY_SECRET_STRING: <terraform:somewhere#string>"
 
 	err := d.Replace()
 	if err == nil {
@@ -87,7 +86,7 @@ func TestToYAML_Missing_PlaceholdersSpecificPath(t *testing.T) {
 }
 
 func TestToYAML_RemoveMissing(t *testing.T) {
-	mv := helpers.MockVault{}
+	mv := helpers.MockStateBackend{}
 
 	d := Template{
 		Resource{
@@ -108,8 +107,8 @@ func TestToYAML_RemoveMissing(t *testing.T) {
 					},
 				},
 				"data": map[string]interface{}{
-					"MY_SECRET_STRING": "<string>",
-					"MY_SECRET_NUM":    "<num>",
+					"MY_SECRET_STRING": "<terraform:string>",
+					"MY_SECRET_NUM":    "<terraform:num>",
 				},
 			},
 			Backend: &mv,
@@ -140,8 +139,61 @@ func TestToYAML_RemoveMissing(t *testing.T) {
 	}
 }
 
+func TestToYAML_KeepAVP(t *testing.T) {
+	mv := helpers.MockStateBackend{}
+
+	d := Template{
+		Resource{
+			Kind: "Secret",
+			Annotations: map[string]string{
+				types.ATPPathAnnotation:          "path/to/secret",
+				types.ATPRemoveMissingAnnotation: "true",
+			},
+			TemplateData: map[string]interface{}{
+				"apiVersion": "v1",
+				"kind":       "Secret",
+				"metadata": map[string]interface{}{
+					"namespace": "default",
+					"name":      "my-app",
+					"annotations": map[string]interface{}{
+						types.ATPPathAnnotation: "path/to/secret",
+					},
+				},
+				"data": map[string]interface{}{
+					"MY_SECRET_STRING": "<string>",
+					"MY_SECRET_NUM":    "<terraform:num>",
+				},
+			},
+			Backend: &mv,
+			Data: map[string]interface{}{
+				"num": "NQ==",
+			},
+		},
+	}
+
+	err := d.Replace()
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	expectedData, err := ioutil.ReadFile("../../fixtures/output/secret-keep-avp.yaml")
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	expected := string(expectedData)
+	actual, err := d.ToYAML()
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if !strings.Contains(actual, expected) {
+		t.Fatalf("expected YAML:\n%s\nbut got:\n%s\n", expected, actual)
+	}
+}
+
 func TestToYAML_RemoveMissingInvalidResource(t *testing.T) {
-	mv := helpers.MockVault{}
+	mv := helpers.MockStateBackend{}
 
 	d := Template{
 		Resource{
@@ -179,7 +231,7 @@ func TestToYAML_RemoveMissingInvalidResource(t *testing.T) {
 		},
 	}
 
-	expectedErr := "Replace: could not replace all placeholders in Template:\navp.kubernetes.io/remove-missing annotation can only be used on Secret or ConfigMap resources"
+	expectedErr := "Replace: could not replace all placeholders in Template:\natp.kubernetes.io/remove-missing annotation can only be used on Secret or ConfigMap resources"
 
 	err := d.Replace()
 	if err == nil {
@@ -194,7 +246,7 @@ func TestToYAML_RemoveMissingInvalidResource(t *testing.T) {
 func TestNewTemplate(t *testing.T) {
 
 	t.Run("will GetSecrets for placeholder'd YAML", func(t *testing.T) {
-		mv := helpers.MockVault{}
+		mv := helpers.MockStateBackend{}
 
 		template, _ := NewTemplate(unstructured.Unstructured{
 			Object: map[string]interface{}{
@@ -202,8 +254,7 @@ func TestNewTemplate(t *testing.T) {
 				"apiVersion": "v1",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.VaultKVVersionAnnotation: "1",
-						types.ATPPathAnnotation:        "path/to/secret",
+						types.ATPPathAnnotation: "path/to/secret",
 					},
 					"namespace": "default",
 					"name":      "my-app",
@@ -229,8 +280,8 @@ func TestNewTemplate(t *testing.T) {
 		}
 	})
 
-	t.Run("will GetSecrets only for YAMLs w/o avp.kubernetes.io/ignore: True", func(t *testing.T) {
-		mv := helpers.MockVault{}
+	t.Run("will GetSecrets only for YAMLs w/o atp.kubernetes.io/ignore: True", func(t *testing.T) {
+		mv := helpers.MockStateBackend{}
 		NewTemplate(unstructured.Unstructured{
 			Object: map[string]interface{}{
 				"kind":       "Service",
@@ -255,133 +306,7 @@ func TestNewTemplate(t *testing.T) {
 			},
 		}, &mv)
 		if mv.GetSecretsCalled {
-			t.Fatalf("template contains avp.kubernetes.io/ignore:True so GetSecrets should NOT be called")
-		}
-	})
-
-	t.Run("will GetSecrets with version given in avp.kubernetes.io/secret-version", func(t *testing.T) {
-		mv := helpers.MockVault{}
-
-		mv.LoadData(map[string]interface{}{
-			"password": "original-value",
-		})
-		mv.LoadData(map[string]interface{}{
-			"password": "changed-value",
-		})
-
-		template, _ := NewTemplate(unstructured.Unstructured{
-			Object: map[string]interface{}{
-				"kind":       "Secret",
-				"apiVersion": "v1",
-				"metadata": map[string]interface{}{
-					"annotations": map[string]interface{}{
-						types.ATPSecretVersionAnnotation: "1",
-						types.ATPPathAnnotation:          "path/to/secret",
-					},
-					"namespace": "default",
-					"name":      "my-app",
-				},
-				"data": map[string]interface{}{
-					"new-value": "<terraform:path:/path/to/secret#password#2>",
-					"old-value": "<password>",
-				},
-			},
-		}, &mv)
-
-		if template.Resource.Kind != "Secret" {
-			t.Fatalf("template should have Kind of %s, instead it has %s", "Secret", template.Resource.Kind)
-		}
-
-		if !mv.GetSecretsCalled {
-			t.Fatalf("template does contain <placeholders> so GetSecrets should be called")
-		}
-
-		err := template.Replace()
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
-
-		expected := map[string]interface{}{
-			"kind":       "Secret",
-			"apiVersion": "v1",
-			"metadata": map[string]interface{}{
-				"annotations": map[string]interface{}{
-					types.ATPSecretVersionAnnotation: "1",
-					types.ATPPathAnnotation:          "path/to/secret",
-				},
-				"namespace": "default",
-				"name":      "my-app",
-			},
-			"data": map[string]interface{}{
-				"new-value": "changed-value",
-				"old-value": "original-value",
-			},
-		}
-
-		if !reflect.DeepEqual(expected, template.TemplateData) {
-			t.Fatalf("expected %s got %s", expected, template.TemplateData)
-		}
-	})
-
-	t.Run("will GetSecrets with latest version by default", func(t *testing.T) {
-		mv := helpers.MockVault{}
-
-		mv.LoadData(map[string]interface{}{
-			"password": "original-value",
-		})
-		mv.LoadData(map[string]interface{}{
-			"password": "changed-value",
-		})
-
-		template, _ := NewTemplate(unstructured.Unstructured{
-			Object: map[string]interface{}{
-				"kind":       "Secret",
-				"apiVersion": "v1",
-				"metadata": map[string]interface{}{
-					"annotations": map[string]interface{}{
-						types.ATPPathAnnotation: "path/to/secret",
-					},
-					"namespace": "default",
-					"name":      "my-app",
-				},
-				"data": map[string]interface{}{
-					"old-value": "<terraform:path:/path/to/secret#password#1>",
-					"new-value": "<password>",
-				},
-			},
-		}, &mv)
-
-		if template.Resource.Kind != "Secret" {
-			t.Fatalf("template should have Kind of %s, instead it has %s", "Secret", template.Resource.Kind)
-		}
-
-		if !mv.GetSecretsCalled {
-			t.Fatalf("template does contain <placeholders> so GetSecrets should be called")
-		}
-
-		err := template.Replace()
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
-
-		expected := map[string]interface{}{
-			"kind":       "Secret",
-			"apiVersion": "v1",
-			"metadata": map[string]interface{}{
-				"annotations": map[string]interface{}{
-					types.ATPPathAnnotation: "path/to/secret",
-				},
-				"namespace": "default",
-				"name":      "my-app",
-			},
-			"data": map[string]interface{}{
-				"new-value": "changed-value",
-				"old-value": "original-value",
-			},
-		}
-
-		if !reflect.DeepEqual(expected, template.TemplateData) {
-			t.Fatalf("expected %s got %s", expected, template.TemplateData)
+			t.Fatalf("template contains atp.kubernetes.io/ignore:True so GetSecrets should NOT be called")
 		}
 	})
 }
@@ -401,14 +326,14 @@ func TestToYAML_Deployment(t *testing.T) {
 						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
-					"name":      "<name>",
+					"name":      "<terraform:name>",
 				},
 				"spec": map[string]interface{}{
-					"replicas": "<replicas>",
+					"replicas": "<terraform:replicas>",
 					"template": map[string]interface{}{
 						"metadata": map[string]interface{}{
 							"labels": map[string]interface{}{
-								"app": "<name>",
+								"app": "<terraform:name>",
 							},
 						},
 					},
@@ -457,15 +382,15 @@ func TestToYAML_Service(t *testing.T) {
 						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
-					"name":      "<name>",
+					"name":      "<terraform:name>",
 				},
 				"spec": map[string]interface{}{
 					"selector": map[string]interface{}{
-						"app": "<name>",
+						"app": "<terraform:name>",
 					},
 					"ports": []interface{}{
 						map[string]interface{}{
-							"port": "<port>",
+							"port": "<terraform:port>",
 						},
 					},
 				},
@@ -510,15 +435,14 @@ func TestToYAML_Secret_PlaceholderedData(t *testing.T) {
 				"kind":       "Secret",
 				"metadata": map[string]interface{}{
 					"annotations": map[string]interface{}{
-						types.ATPPathAnnotation:        "path",
-						types.VaultKVVersionAnnotation: "1",
+						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
-					"name":      "<name>",
+					"name":      "<terraform:name>",
 				},
 				"data": map[string]interface{}{
-					"MY_SECRET_STRING": "<string>",
-					"MY_SECRET_NUM":    "<num>",
+					"MY_SECRET_STRING": "<terraform:string>",
+					"MY_SECRET_NUM":    "<terraform:num>",
 				},
 			},
 			Data: map[string]interface{}{
@@ -562,15 +486,15 @@ func TestToYAML_CRD_PlaceholderedData(t *testing.T) {
 				"kind":       "SomeCustomResource",
 				"metadata": map[string]interface{}{
 					"namespace": "default",
-					"name":      "<name>",
+					"name":      "<terraform:name>",
 				},
 				"data": map[string]interface{}{
 					"A_SEQUENCE": []interface{}{
 						1,
-						"<two>",
+						"<terraform:two>",
 					},
-					"A_YAML":         "username: <username>\npassword: <password>",
-					"A_SHELL_SCRIPT": "bx login --apikey <apikey>",
+					"A_YAML":         "username: <terraform:username>\npassword: <terraform:password>",
+					"A_SHELL_SCRIPT": "bx login --apikey <terraform:apikey>",
 				},
 			},
 			Data: map[string]interface{}{
@@ -604,7 +528,7 @@ func TestToYAML_CRD_PlaceholderedData(t *testing.T) {
 	}
 }
 func TestToYAML_CRD_FakePlaceholders(t *testing.T) {
-	mv := helpers.MockVault{}
+	mv := helpers.MockStateBackend{}
 	mv.LoadData(map[string]interface{}{
 		"apikey": "123",
 	})
@@ -621,7 +545,7 @@ func TestToYAML_CRD_FakePlaceholders(t *testing.T) {
 				},
 				"data": map[string]interface{}{
 					"description":    "supported options: <beep>, <boop>",
-					"A_SHELL_SCRIPT": "bx login --apikey <terraform:path:a/path#apikey>",
+					"A_SHELL_SCRIPT": "bx login --apikey <terraform:path/to/tfstate#apikey>",
 				},
 			},
 			Backend: &mv,
@@ -710,11 +634,11 @@ func TestToYAML_Secret_MixedData(t *testing.T) {
 						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
-					"name":      "<name>",
+					"name":      "<terraform:name>",
 				},
 				"data": map[string]interface{}{
-					"MY_SECRET_STRING": "<string>",
-					"MY_SECRET_NUM":    "<num>",
+					"MY_SECRET_STRING": "<terraform:string>",
+					"MY_SECRET_NUM":    "<terraform:num>",
 					"MY_LEAKED_SECRET": "cGFzc3dvcmQ=",
 				},
 			},
@@ -762,11 +686,11 @@ func TestToYAML_Secret_PlaceholderedStringData(t *testing.T) {
 						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
-					"name":      "<name>",
+					"name":      "<terraform:name>",
 				},
 				"stringData": map[string]interface{}{
-					"MY_SECRET_STRING": "<string>",
-					"MY_SECRET_NUM":    "<num>",
+					"MY_SECRET_STRING": "<terraform:string>",
+					"MY_SECRET_NUM":    "<terraform:num>",
 				},
 			},
 			Data: map[string]interface{}{
@@ -813,11 +737,11 @@ func TestToYAML_ConfigMap(t *testing.T) {
 						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
-					"name":      "<name>",
+					"name":      "<terraform:name>",
 				},
 				"data": map[string]interface{}{
-					"MY_NONSECRET_STRING": "<string>",
-					"MY_NONSECRET_NUM":    "<num>",
+					"MY_NONSECRET_STRING": "<terraform:string>",
+					"MY_NONSECRET_NUM":    "<terraform:num>",
 				},
 			},
 			Data: map[string]interface{}{
@@ -864,15 +788,15 @@ func TestToYAML_Ingress(t *testing.T) {
 						types.ATPPathAnnotation: "path",
 					},
 					"namespace": "default",
-					"name":      "<name>",
+					"name":      "<terraform:name>",
 				},
 				"spec": map[string]interface{}{
 					"tls": []interface{}{
 						map[string]interface{}{
 							"hosts": []interface{}{
-								"mysubdomain.<host>",
+								"mysubdomain.<terraform:host>",
 							},
-							"secretName": "<secret>",
+							"secretName": "<terraform:secret>",
 						},
 					},
 				},
@@ -920,7 +844,7 @@ func TestToYAML_CronJob(t *testing.T) {
 					"annotations": map[string]interface{}{
 						types.ATPPathAnnotation: "path",
 					},
-					"name": "<name>",
+					"name": "<terraform:name>",
 				},
 				"spec": map[string]interface{}{
 					"schedule": "0 0 0 0 0",
@@ -930,8 +854,8 @@ func TestToYAML_CronJob(t *testing.T) {
 								"spec": map[string]interface{}{
 									"containers": []interface{}{
 										map[string]interface{}{
-											"image": "<name>:<tag>",
-											"name":  "<name>",
+											"image": "<terraform:name>:<terraform:tag>",
+											"name":  "<terraform:name>",
 										},
 									},
 								},
@@ -982,15 +906,15 @@ func TestToYAML_Job(t *testing.T) {
 					"annotations": map[string]interface{}{
 						types.ATPPathAnnotation: "path",
 					},
-					"name": "<name>",
+					"name": "<terraform:name>",
 				},
 				"spec": map[string]interface{}{
 					"template": map[string]interface{}{
 						"spec": map[string]interface{}{
 							"containers": []interface{}{
 								map[string]interface{}{
-									"image": "<name>:<tag>",
-									"name":  "<name>",
+									"image": "<terraform:name>:<terraform:tag>",
+									"name":  "<terraform:name>",
 								},
 							},
 						},

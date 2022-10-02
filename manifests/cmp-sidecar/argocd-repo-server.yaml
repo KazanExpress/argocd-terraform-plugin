@@ -105,7 +105,7 @@ spec:
 
           # Register plugins into sidecar
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-            subPath: avp.yaml
+            subPath: atp.yaml
             name: cmp-plugin
 
           # Important: Mount tools into $PATH

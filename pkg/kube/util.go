@@ -24,8 +24,8 @@ func (e *missingKeyError) Error() string {
 }
 
 var genericPlaceholder, _ = regexp.Compile(`(?mU)<terraform:(.*)>`)
-var specificPathPlaceholder, _ = regexp.Compile(`(?mU)<terraform:path:([^#]+)#([^#]+)(?:#([^#]+))?>`)
-var indivPlaceholderSyntax, _ = regexp.Compile(`(?mU)terraform:path:(?P<path>[^#]+?)#(?P<key>[^#]+?)(?:#(?P<version>.+?))??`)
+var specificPathPlaceholder, _ = regexp.Compile(`(?mU)<([^#]+)#([^#]+)(?:#([^#]+))?>`)
+var indivPlaceholderSyntax, _ = regexp.Compile(`(?mU)(?P<path>[^#]+?)#(?P<key>[^#]+?)??`)
 
 // replaceInner recurses through the given map and replaces the placeholders by calling `replacerFunc`
 // with the key, value, and map of keys to replacement values
@@ -116,6 +116,7 @@ func genericReplacement(key, value string, resource Resource) (_ interface{}, er
 
 	res := placeholderRegex.ReplaceAllFunc([]byte(value), func(match []byte) []byte {
 		placeholder := strings.Trim(string(match), "<>")
+		placeholder = strings.TrimPrefix(placeholder, "terraform:")
 
 		// Split modifiers from placeholder
 		pipelineFields := strings.Split(placeholder, "|")
@@ -126,15 +127,13 @@ func genericReplacement(key, value string, resource Resource) (_ interface{}, er
 		var secretValue interface{}
 		var secretErr error
 		// Check to see if should call out to get individual secret (inline-path in placeholder)
-		// This can include an optional version argument - if unspecified, the latest version is retrieved
 		if indivPlaceholderSyntax.Match([]byte(placeholder)) {
 			indivSecretMatches := indivPlaceholderSyntax.FindStringSubmatch(placeholder)
 			path := indivSecretMatches[indivPlaceholderSyntax.SubexpIndex("path")]
 			key := indivSecretMatches[indivPlaceholderSyntax.SubexpIndex("key")]
-			version := indivSecretMatches[indivPlaceholderSyntax.SubexpIndex("version")]
 
-			utils.VerboseToStdErr("calling GetIndividualSecret for secret %s from path %s at version %s", key, path, version)
-			secretValue, secretErr = resource.Backend.GetIndividualSecret(path, strings.TrimSpace(key), version, resource.Annotations)
+			utils.VerboseToStdErr("calling GetIndividualSecret for secret %s from path %s ", key, path)
+			secretValue, secretErr = resource.Backend.GetIndividualSecret(path, strings.TrimSpace(key), resource.Annotations)
 			if secretErr != nil {
 				err = append(err, secretErr)
 				return match
@@ -178,7 +177,7 @@ func genericReplacement(key, value string, resource Resource) (_ interface{}, er
 			}
 		} else {
 			missingKeyErr := &missingKeyError{
-				s: fmt.Sprintf("replaceString: missing Vault value for placeholder %s in string %s: %s", placeholder, key, value),
+				s: fmt.Sprintf("replaceString: missing output value for placeholder %s in string %s: %s", placeholder, key, value),
 			}
 			err = append(err, missingKeyErr)
 		}

@@ -29,12 +29,11 @@ type Template struct {
 func NewTemplate(template unstructured.Unstructured, backend types.Backend) (*Template, error) {
 	annotations := template.GetAnnotations()
 	path := annotations[types.ATPPathAnnotation]
-	version := annotations[types.ATPSecretVersionAnnotation]
 
 	var err error
 	var data map[string]interface{}
 	if path != "" {
-		data, err = backend.GetSecrets(path, version, annotations)
+		data, err = backend.GetSecrets(path, annotations)
 		if err != nil {
 			return nil, err
 		}

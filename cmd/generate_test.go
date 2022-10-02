@@ -18,8 +18,7 @@ var client *api.Client
 
 func TestMain(t *testing.T) {
 	cluster, roleid, secretid = helpers.CreateTestAppRoleVault(t)
-	os.Setenv("ATP_TYPE", "vault")
-	os.Setenv("VAULT_ADDR", cluster.Cores[0].Client.Address())
+	os.Setenv("ATP_BACKEND", "s3")
 	os.Setenv("ATP_AUTH_TYPE", "approle")
 	os.Setenv("ATP_SECRET_ID", secretid)
 	os.Setenv("ATP_ROLE_ID", roleid)
@@ -140,7 +139,7 @@ func TestMain(t *testing.T) {
 		}
 	})
 
-	t.Run("will ignore templates with avp.kubernetes.io/ignore set to True", func(t *testing.T) {
+	t.Run("will ignore templates with atp.kubernetes.io/ignore set to True", func(t *testing.T) {
 		args := []string{"../fixtures/input/nonempty/ignored-secret.yaml"}
 		cmd := NewGenerateCommand()
 
@@ -224,7 +223,7 @@ func TestMain(t *testing.T) {
 		}
 	})
 
-	os.Unsetenv("ATP_TYPE")
+	os.Unsetenv("ATP_BACKEND")
 	os.Unsetenv("VAULT_ADDR")
 	os.Unsetenv("ATP_AUTH_TYPE")
 	os.Unsetenv("ATP_SECRET_ID")

@@ -9,7 +9,7 @@ We currently support retrieving secrets from KV-V1 and KV-V2 backends.
 For AppRole Authentication, these are the required parameters:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
-ATP_TYPE: vault
+ATP_BACKEND: vault
 ATP_AUTH_TYPE: approle
 ATP_ROLE_ID: Your AppRole Role ID
 ATP_SECRET_ID: Your AppRole Secret ID
@@ -20,7 +20,7 @@ For Vault Token Authentication, these are the required parameters:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
 VAULT_TOKEN: Your Vault token
-ATP_TYPE: vault
+ATP_BACKEND: vault
 ATP_AUTH_TYPE: token
 ```
 
@@ -30,7 +30,7 @@ This option may be the easiest to test with locally, depending on your Vault set
 For Github Authentication, these are the required parameters:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
-ATP_TYPE: vault
+ATP_BACKEND: vault
 ATP_AUTH_TYPE: github
 ATP_GITHUB_TOKEN: Your Github Personal Access Token
 ```
@@ -99,7 +99,7 @@ In order to use Kubernetes Authentication a couple of things are required.
 Once Argo CD and Kubernetes are configured, you can then set the required environment variables for the plugin:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
-ATP_TYPE: vault
+ATP_BACKEND: vault
 ATP_AUTH_TYPE: k8s
 ATP_K8S_MOUNT_PATH: Mount Path of your kubernetes Auth (optional)
 ATP_K8S_ROLE: Your Kuberetes Auth Role
@@ -110,7 +110,7 @@ ATP_K8S_TOKEN_PATH: Path to JWT (optional)
 For Userpass Authentication, these are the required parameters:
 ```
 VAULT_ADDR: Your HashiCorp Vault Address
-ATP_TYPE: vault
+ATP_BACKEND: vault
 ATP_AUTH_TYPE: userpass
 ATP_USERNAME: Your Username
 ATP_PASSWORD: Your Password
@@ -126,7 +126,7 @@ apiVersion: v1
 metadata:
   name: vault-example
   annotations:
-    avp.kubernetes.io/path: "secret/data/database"
+    atp.kubernetes.io/path: "secret/data/database"
 type: Opaque
 data:
   username: <username>
@@ -146,28 +146,6 @@ data:
   password: <path:secret/data/database#password>
 ```
 
-###### Versioned secrets
-
-```yaml
-kind: Secret
-apiVersion: v1
-metadata:
-  name: vault-example
-  annotations:
-    avp.kubernetes.io/path: "secret/data/database"
-    avp.kubernetes.io/secret-version: "2" # 2 is the latest revision in this example
-type: Opaque
-data:
-  username: <username>
-  password: <password>
-  username-current: <path:secret/data/database#username#2> # same as <username>
-  password-current: <path:secret/data/database#password#2> # same as <password>
-  username-old: <path:secret/data/database#username#1>
-  password-old: <path:secret/data/database#password#1>
-```
-
-**Note**: Only Vault KV-V2 backends support versioning. Versions specified with a KV-V1 Vault will be ignored and the latest version will be retrieved.
-
 ### IBM Cloud Secrets Manager
 For IBM Cloud Secret Manager we only support using IAM authentication at this time.
 
@@ -181,7 +159,7 @@ We support all types of secrets that can be retrieved from IBM Cloud Secret Mana
 For IAM Authentication, these are the required parameters:
 ```
 ATP_IBM_INSTANCE_URL or VAULT_ADDR: Your IBM Cloud Secret Manager Endpoint
-ATP_TYPE: ibmsecretsmanager
+ATP_BACKEND: ibmsecretsmanager
 ATP_IBM_API_KEY: Your IBM Cloud API Key
 ```
 
@@ -195,7 +173,7 @@ apiVersion: v1
 metadata:
   name: ibm-example
   annotations:
-    avp.kubernetes.io/path: "ibmcloud/arbitrary/secrets/groups/123" # 123 represents your Secret Group ID
+    atp.kubernetes.io/path: "ibmcloud/arbitrary/secrets/groups/123" # 123 represents your Secret Group ID
 type: Opaque
 data:
   username: <username>
@@ -223,7 +201,7 @@ apiVersion: v1
 metadata:
   name: ibm-example
   annotations:
-    avp.kubernetes.io/path: "ibmcloud/imported_cert/secrets/groups/123" # 123 represents your Secret Group ID
+    atp.kubernetes.io/path: "ibmcloud/imported_cert/secrets/groups/123" # 123 represents your Secret Group ID
 type: Opaque
 stringData:
   PUBLIC_CRT: |
@@ -242,7 +220,7 @@ Supported credentials and the order in which they are loaded are described [here
 
 These are the parameters for AWS:
 ```
-ATP_TYPE: awssecretsmanager
+ATP_BACKEND: awssecretsmanager
 AWS_REGION: Your AWS Region (Optional: defaults to us-east-2)
 ```
 
@@ -256,7 +234,7 @@ kind: Secret
 metadata:
   name: aws-example
   annotations:
-    avp.kubernetes.io/path: "test-aws-secret" # The name of your AWS Secret
+    atp.kubernetes.io/path: "test-aws-secret" # The name of your AWS Secret
 stringData:
   sample-secret: <test-secret>
 type: Opaque
@@ -271,23 +249,6 @@ metadata:
   name: aws-example
 stringData:
   sample-secret: <path:test-aws-secret#test-secret>
-type: Opaque
-```
-
-###### Versioned secrets
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: aws-example
-  annotations:
-    avp.kubernetes.io/path: "some-path/secret"
-    avp.kubernetes.io/secret-version: "AWSCURRENT"
-stringData:
-  sample-secret: <test-secret>
-  sample-secret-again: <path:some-path/secret#test-secret#AWSCURRENT>
-  sample-secret-old: <path:some-path/secret#test-secret#AWSPREVIOUS>
 type: Opaque
 ```
 
@@ -331,7 +292,7 @@ Refer to the [Authentication Overview](https://cloud.google.com/docs/authenticat
 
 These are the parameters for GCP:
 ```
-ATP_TYPE: gcpsecretmanager
+ATP_BACKEND: gcpsecretmanager
 ```
 
 ##### Examples
@@ -344,7 +305,7 @@ apiVersion: v1
 metadata:
   name: test-secret
   annotations:
-    avp.kubernetes.io/path: projects/12345678987/secrets/test-secret
+    atp.kubernetes.io/path: projects/12345678987/secrets/test-secret
 type: Opaque
 data:
   password: <test-secret>
@@ -362,22 +323,6 @@ data:
   password: <path:projects/12345678987/secrets/test-secret#test-secret>
 ```
 
-###### Versioned secrets
-
-```yaml
-kind: Secret
-apiVersion: v1
-metadata:
-  name: test-secret
-  annotations:
-    avp.kubernetes.io/path: "projects/12345678987/secrets/test-secret"
-    avp.kubernetes.io/secret-version: "latest"
-type: Opaque
-data:
-  current-password: <password>
-  current-password-again: <path:projects/12345678987/secrets/test-secret#password#latest>
-  password-old: <path:projects/12345678987/secrets/test-secret#password#another-version-id>
-```
 
 ### AZURE Key Vault
 
@@ -395,7 +340,7 @@ For Azure, `path` is the unique name of your key vault.
 
 These are the parameters for Azure:
 ```
-ATP_TYPE: azurekeyvault
+ATP_BACKEND: azurekeyvault
 ```
 
 ##### Examples
@@ -408,7 +353,7 @@ apiVersion: v1
 metadata:
   name: test-secret
   annotations:
-    avp.kubernetes.io/path: "keyvault"
+    atp.kubernetes.io/path: "keyvault"
 type: Opaque
 data:
   password: <test-secret>
@@ -450,7 +395,7 @@ For SOPS, `path` is file path to a JSON or YAML file encrypted using SOPS  and `
 
 These are the parameters for SOPS:
 ```
-ATP_TYPE: sops
+ATP_BACKEND: sops
 ```
 
 ##### Examples
@@ -469,7 +414,7 @@ apiVersion: v1
 metadata:
   name: test-secret
   annotations:
-    avp.kubernetes.io/path: "example.yaml"
+    atp.kubernetes.io/path: "example.yaml"
 type: Opaque
 data:
   password: <test-secret>
@@ -495,7 +440,7 @@ apiVersion: v1
 metadata:
   name: test-secret
   annotations:
-    avp.kubernetes.io/path: "example.yaml"
+    atp.kubernetes.io/path: "example.yaml"
 type: Opaque
 stringData:
   password: <parent | jsonPath {.child}>
@@ -507,7 +452,7 @@ Refer to the [IAM overview](https://cloud.yandex.com/en/docs/iam/concepts/) for 
 
 These are the parameters for YCL:
 ```
-ATP_TYPE: yandexcloudlockbox
+ATP_BACKEND: yandexcloudlockbox
 ATP_YCL_SERVICE_ACCOUNT_ID: Service account ID
 ATP_YCL_KEY_ID: Service account authorized Key ID
 ATP_YCL_PRIVATE_KEY: Service account authorized private key
@@ -522,7 +467,7 @@ apiVersion: v1
 metadata:
   name: test-secret
   annotations:
-    avp.kubernetes.io/path: "secret-id"
+    atp.kubernetes.io/path: "secret-id"
 type: Opaque
 data:
   password: <key>
@@ -547,8 +492,8 @@ kind: Secret
 apiVersion: v1
 metadata:
   name: test-secret
-    avp.kubernetes.io/path: "secret-id"
-    avp.kubernetes.io/secret-version: "version-id"
+    atp.kubernetes.io/path: "secret-id"
+    atp.kubernetes.io/secret-version: "version-id"
 type: Opaque
 data:
   current-password: <password>
@@ -567,7 +512,7 @@ Refer to the [1Password Secrets Automation overview](https://support.1password.c
 These are the parameters for 1Password Connect:
 
 ```
-ATP_TYPE: 1passwordconnect
+ATP_BACKEND: 1passwordconnect
 OP_CONNECT_TOKEN: Your 1Password Connect access token
 OP_CONNECT_HOST: The hostname of your 1Password Connect server
 ```
@@ -582,7 +527,7 @@ apiVersion: v1
 metadata:
   name: test-secret
   annotations:
-    avp.kubernetes.io/path: "vaults/vault-uuid/items/item-uuid"
+    atp.kubernetes.io/path: "vaults/vault-uuid/items/item-uuid"
 type: Opaque
 data:
   password: <key>

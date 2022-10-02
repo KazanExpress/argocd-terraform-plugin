@@ -7,5 +7,5 @@ metadata:
   name: example-annotation
 type: Opaque
 stringData:
-  username: <terraform:path:env/test1/terraform.tfstate#int_value>
-  password: <terraform:path:env/test1/terraform.tfstate#string_value>
+  username: <terraform:env/test1/terraform.tfstate#int_value>
+  password: <terraform:env/test1/terraform.tfstate#string_value>

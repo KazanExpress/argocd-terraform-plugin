@@ -21,7 +21,7 @@ func assertSuccessfulReplacement(actual, expected *Resource, t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(actual.Data, expected.Data) {
-		t.Fatalf("expected Vault map to look like %s\n but got: %s", expected.Data, actual.Data)
+		t.Fatalf("expected output map to look like %s\n but got: %s", expected.Data, actual.Data)
 	}
 }
 
@@ -35,14 +35,14 @@ func assertFailedReplacement(actual, expected *Resource, t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(actual.Data, expected.Data) {
-		t.Fatalf("expected Vault map to look like %s\n but got: %s", expected.Data, actual.Data)
+		t.Fatalf("expected output map to look like %s\n but got: %s", expected.Data, actual.Data)
 	}
 }
 
 func TestGenericReplacement_simpleString(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "<namespace>",
+			"namespace": "<terraform:namespace>",
 		},
 		Data: map[string]interface{}{
 			"namespace": "default",
@@ -69,16 +69,16 @@ func TestGenericReplacement_simpleString(t *testing.T) {
 
 func TestGenericReplacement_specificPath(t *testing.T) {
 	// Test that the specific-path placeholder syntax is used to find/replace placeholders
-	// along with the generic syntax, since the generic Vault path is defined
-	mv := helpers.MockVault{}
+	// along with the generic syntax, since the generic output path is defined
+	mv := helpers.MockStateBackend{}
 	mv.LoadData(map[string]interface{}{
 		"namespace": "default",
 	})
 
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "<terraform:path:blah/blah#namespace>",
-			"name":      "<name>",
+			"namespace": "<terraform:blah/blah#namespace>",
+			"name":      "<terraform:name>",
 		},
 		Data: map[string]interface{}{
 			"namespace": "something-else",
@@ -93,7 +93,7 @@ func TestGenericReplacement_specificPath(t *testing.T) {
 	replaceInner(&dummyResource, &dummyResource.TemplateData, genericReplacement)
 
 	if !mv.GetIndividualSecretCalled {
-		t.Fatalf("expected GetSecrets to be called since placeholder contains explicit path so Vault lookup is neeed")
+		t.Fatalf("expected GetSecrets to be called since placeholder contains explicit path so output lookup is needed")
 	}
 
 	expected := Resource{
@@ -111,64 +111,17 @@ func TestGenericReplacement_specificPath(t *testing.T) {
 	assertSuccessfulReplacement(&dummyResource, &expected, t)
 }
 
-func TestGenericReplacement_specificPathVersioned(t *testing.T) {
-	// Test that the specific-path placeholder syntax with versioning is used to find/replace placeholders
-	mv := helpers.MockVault{}
-	mv.LoadData(map[string]interface{}{
-		"version": "one",
-	})
-	mv.LoadData(map[string]interface{}{
-		"version": "two",
-	})
-	mv.LoadData(map[string]interface{}{
-		"version": "three",
-	})
-
-	dummyResource := Resource{
-		TemplateData: map[string]interface{}{
-			"first":  "<terraform:path:blah/blah#version#1>",
-			"second": "<terraform:path:blah/blah#version#2>",
-			"third":  "<terraform:path:blah/blah#version#3>",
-			"latest": "<terraform:path:blah/blah#version>",
-		},
-		Data:    map[string]interface{}{},
-		Backend: &mv,
-		Annotations: map[string]string{
-			(types.ATPPathAnnotation): "",
-		},
-	}
-
-	replaceInner(&dummyResource, &dummyResource.TemplateData, genericReplacement)
-
-	if !mv.GetIndividualSecretCalled {
-		t.Fatalf("expected GetSecrets to be called since placeholder contains explicit path so Vault lookup is neeed")
-	}
-
-	expected := Resource{
-		TemplateData: map[string]interface{}{
-			"first":  "one",
-			"second": "two",
-			"third":  "three",
-			"latest": "three",
-		},
-		Data:              map[string]interface{}{},
-		replacementErrors: []error{},
-	}
-
-	assertSuccessfulReplacement(&dummyResource, &expected, t)
-}
-
 func TestGenericReplacement_specificPathNoAnnotation(t *testing.T) {
-	mv := helpers.MockVault{}
+	mv := helpers.MockStateBackend{}
 	mv.LoadData(map[string]interface{}{
 		"namespace": "default",
 	})
 
 	// Test that the specific-path placeholder syntax is used to find/replace placeholders
-	// and NOT the generic one, since the generic Vault path is undefined
+	// and NOT the generic one, since the generic output path is undefined
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace":   "<terraform:path:blah/blah#namespace>",
+			"namespace":   "<terraform:blah/blah#namespace>",
 			"description": "for example, write <key>",
 		},
 		Data: map[string]interface{}{
@@ -201,8 +154,8 @@ func TestGenericReplacement_specificPathNoAnnotation(t *testing.T) {
 func TestGenericReplacement_multiString(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "<namespace>",
-			"image":     "foo.io/<name>:<tag>",
+			"namespace": "<terraform:namespace>",
+			"image":     "foo.io/<terraform:name>:<terraform:tag>",
 		},
 		Data: map[string]interface{}{
 			"namespace": "default",
@@ -235,8 +188,8 @@ func TestGenericReplacement_multiString(t *testing.T) {
 func TestGenericReplacement_Base64(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "<namespace | base64encode>",
-			"image":     "foo.io/<name>:<tag>",
+			"namespace": "<terraform:namespace | base64encode>",
+			"image":     "foo.io/<terraform:name>:<terraform:tag>",
 		},
 		Data: map[string]interface{}{
 			"namespace": "default",
@@ -269,9 +222,9 @@ func TestGenericReplacement_Base64(t *testing.T) {
 func TestGenericReplacement_JsonPath(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"username": "<data | jsonPath {.credentials.user}>",
-			"password": "<data | jsonPath {.credentials.pass} | base64encode>",
-			"image":    "<data | jsonPath {.image} | jsonParse>",
+			"username": "<terraform:data | jsonPath {.credentials.user}>",
+			"password": "<terraform:data | jsonPath {.credentials.pass} | base64encode>",
+			"image":    "<terraform:data | jsonPath {.image} | jsonParse>",
 		},
 		Data: map[string]interface{}{
 			"data": map[string]interface{}{
@@ -322,7 +275,7 @@ func TestGenericReplacement_JsonPath(t *testing.T) {
 func TestGenericReplacement_Modifier_Error(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"image": "<data | jsonPath {.missingPath}>",
+			"image": "<terraform:data | jsonPath {.missingPath}>",
 		},
 		Data: map[string]interface{}{
 			"data": map[string]interface{}{},
@@ -336,13 +289,13 @@ func TestGenericReplacement_Modifier_Error(t *testing.T) {
 
 	expected := Resource{
 		TemplateData: map[string]interface{}{
-			"image": "<data | jsonPath {.missingPath}>",
+			"image": "<terraform:data | jsonPath {.missingPath}>",
 		},
 		Data: map[string]interface{}{
 			"data": map[string]interface{}{},
 		},
 		replacementErrors: []error{
-			fmt.Errorf("jsonPath: missingPath is not found for placeholder data in string image: <data | jsonPath {.missingPath}>"),
+			fmt.Errorf("jsonPath: missingPath is not found for placeholder data in string image: <terraform:data | jsonPath {.missingPath}>"),
 		},
 	}
 
@@ -352,7 +305,7 @@ func TestGenericReplacement_Modifier_Error(t *testing.T) {
 func TestGenericReplacement_Modifier_Undefined(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"image": "<data | undefinedModifier>",
+			"image": "<terraform:data | undefinedModifier>",
 		},
 		Data: map[string]interface{}{
 			"data": map[string]interface{}{},
@@ -366,13 +319,13 @@ func TestGenericReplacement_Modifier_Undefined(t *testing.T) {
 
 	expected := Resource{
 		TemplateData: map[string]interface{}{
-			"image": "<data | undefinedModifier>",
+			"image": "<terraform:data | undefinedModifier>",
 		},
 		Data: map[string]interface{}{
 			"data": map[string]interface{}{},
 		},
 		replacementErrors: []error{
-			fmt.Errorf("invalid modifier: undefinedModifier for placeholder data in string image: <data | undefinedModifier>"),
+			fmt.Errorf("invalid modifier: undefinedModifier for placeholder data in string image: <terraform:data | undefinedModifier>"),
 		},
 	}
 
@@ -382,10 +335,10 @@ func TestGenericReplacement_Modifier_Undefined(t *testing.T) {
 func TestGenericReplacement_nestedString(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "<namespace>",
+			"namespace": "<terraform:namespace>",
 			"spec": map[string]interface{}{
 				"selector": map[string]interface{}{
-					"app": "<name>",
+					"app": "<terraform:name>",
 				},
 			},
 		},
@@ -422,9 +375,9 @@ func TestGenericReplacement_nestedString(t *testing.T) {
 func TestGenericReplacement_int(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "<namespace>",
+			"namespace": "<terraform:namespace>",
 			"spec": map[string]interface{}{
-				"replicas": "<replicas>",
+				"replicas": "<terraform:replicas>",
 			},
 		},
 		Data: map[string]interface{}{
@@ -458,9 +411,9 @@ func TestGenericReplacement_int(t *testing.T) {
 func TestGenericReplacement_missingValue(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "<namespace>",
+			"namespace": "<terraform:namespace>",
 			"spec": map[string]interface{}{
-				"replicas": "<replicas>",
+				"replicas": "<terraform:replicas>",
 			},
 		},
 		Data: map[string]interface{}{
@@ -477,7 +430,7 @@ func TestGenericReplacement_missingValue(t *testing.T) {
 		TemplateData: map[string]interface{}{
 			"namespace": "default",
 			"spec": map[string]interface{}{
-				"replicas": "<replicas>",
+				"replicas": "<terraform:replicas>",
 			},
 		},
 		Data: map[string]interface{}{
@@ -485,7 +438,7 @@ func TestGenericReplacement_missingValue(t *testing.T) {
 		},
 		replacementErrors: []error{
 			&missingKeyError{
-				s: fmt.Sprint("replaceString: missing Vault value for placeholder replicas in string replicas: <replicas>"),
+				s: fmt.Sprint("replaceString: missing output value for placeholder replicas in string replicas: <terraform:replicas>"),
 			},
 		},
 	}
@@ -496,8 +449,8 @@ func TestGenericReplacement_missingValue(t *testing.T) {
 func TestSecretReplacement(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "<namespace | base64encode>",
-			"image":     "foo.io/<name>:<tag>",
+			"namespace": "<terraform:namespace | base64encode>",
+			"image":     "foo.io/<terraform:name>:<terraform:tag>",
 		},
 		Data: map[string]interface{}{
 			"namespace": "default",
@@ -530,8 +483,8 @@ func TestSecretReplacement(t *testing.T) {
 func TestSecretReplacement_Base64(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
-			"namespace": "PG5hbWVzcGFjZSB8IGJhc2U2NGVuY29kZT4=",
-			"image":     "foo.io/<name>:<tag>",
+			"namespace": "PHRlcnJhZm9ybTpuYW1lc3BhY2UgfCBiYXNlNjRlbmNvZGU+",
+			"image":     "foo.io/<terraform:name>:<terraform:tag>",
 		},
 		Data: map[string]interface{}{
 			"namespace": "default",
@@ -565,7 +518,7 @@ func TestSecretReplacement_Base64Substrings(t *testing.T) {
 	dummyResource := Resource{
 		TemplateData: map[string]interface{}{
 			"data": map[string]interface{}{
-				"credentials": `W2RlZmF1bHRdCmF3c19hY2Nlc3Nfa2V5X2lkPTxhY2Nlc3Nfa2V5X2lkPgphd3Nfc2VjcmV0X2FjY2Vzc19rZXk9PHNlY3JldF9hY2Nlc3Nfa2V5X2lkPgo=`,
+				"credentials": `W2RlZmF1bHRdCmF3c19hY2Nlc3Nfa2V5X2lkPTx0ZXJyYWZvcm06YWNjZXNzX2tleV9pZD4KYXdzX3NlY3JldF9hY2Nlc3Nfa2V5PTx0ZXJyYWZvcm06c2VjcmV0X2FjY2Vzc19rZXlfaWQ+Cg==`,
 			},
 		},
 		Data: map[string]interface{}{

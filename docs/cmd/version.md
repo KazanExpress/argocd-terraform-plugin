@@ -11,4 +11,4 @@ argocd-terraform-plugin version [flags]
 
 ### SEE ALSO
 
-* [argocd-terraform-plugin](avp.md) - replace <placeholder\>'s with Vault secrets
+* [argocd-terraform-plugin](atp.md) - replace <placeholder\>'s with Vault secrets

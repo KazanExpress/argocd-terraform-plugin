@@ -14,4 +14,4 @@ argocd-terraform-plugin generate PATH [flags]
 
 ### SEE ALSO
 
-* [argocd-terraform-plugin](avp.md) - replace <placeholder\>'s with Vault secrets
+* [argocd-terraform-plugin](atp.md) - replace <placeholder\>'s with Vault secrets
