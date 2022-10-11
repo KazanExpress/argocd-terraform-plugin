@@ -5,8 +5,6 @@
 ![Downloads](https://img.shields.io/github/downloads/IBM/argocd-terraform-plugin/total?logo=github)
 [![codecov](https://codecov.io/gh/KazanExpress/argocd-terraform-plugin/branch/main/graph/badge.svg?token=6Xr7V8AMTE)](https://codecov.io/gh/KazanExpress/argocd-terraform-plugin)
 
-<img src="https://github.com/KazanExpress/argocd-terraform-plugin/raw/main/assets/argo_vault_logo.png" width="300">
-
 An Argo CD plugin to retrieve secrets from terraform state (only s3 backend is supported now) and inject them into Kubernetes resources.
 
 This plugin is a modified fork of [argocd-vault-plugin](https://github.com/argoproj-labs/argocd-vault-plugin)
