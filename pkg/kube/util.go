@@ -24,7 +24,7 @@ func (e *missingKeyError) Error() string {
 }
 
 var genericPlaceholder, _ = regexp.Compile(`(?mU)<terraform:(.*)>`)
-var specificPathPlaceholder, _ = regexp.Compile(`(?mU)<([^#]+)#([^#]+)(?:#([^#]+))?>`)
+var specificPathPlaceholder, _ = regexp.Compile(`(?mU)<terraform:([^#]+)#([^#]+)(?:#([^#]+))?>`)
 var indivPlaceholderSyntax, _ = regexp.Compile(`(?mU)(?P<path>[^#]+?)#(?P<key>[^#]+?)??`)
 
 // replaceInner recurses through the given map and replaces the placeholders by calling `replacerFunc`

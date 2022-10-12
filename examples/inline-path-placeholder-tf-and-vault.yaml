@@ -1,0 +1,15 @@
+
+kind: Secret
+apiVersion: v1
+metadata:
+  name: example-annotation
+type: Opaque
+data:
+
+  # these fields will be kept as is
+  username: <path:secret/data/database#username>
+  password: <path:secret/data/database#password>
+
+  # these fields will be overwriten
+  tfusername: <terraform:env/test1/terraform.tfstate#int_value>
+  tfpassword: <terraform:env/test1/terraform.tfstate#string_value>
